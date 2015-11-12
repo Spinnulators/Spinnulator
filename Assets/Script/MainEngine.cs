@@ -8,6 +8,10 @@ public class MainEngine : MonoBehaviour {
     private Vector3 oldFootPosition=new Vector3(0f,0f,0f);
     private GameObject distance;
     private Vector3 velocity;
+    private Vector3 velocity2=new Vector3(0f,0f,0f);
+    private Vector3 velocity3=new Vector3(0f,0f,0f);
+    private Vector3 velocity4 = new Vector3(0f, 0f, 0f);
+    private Vector3 velocity5 = new Vector3(0f, 0f, 0f);
     private Vector3 cameraMovementX = new Vector3(1f, 0f, 0f);
     private Vector3 cameraMovementY = new Vector3(0f, 1f, 0f);
     private Vector3 cameraMovementZ = new Vector3(0f, 0f, 1f);
@@ -16,7 +20,7 @@ public class MainEngine : MonoBehaviour {
     void Start () {
         if (GameObject.Find("Main Camera"))
         {
-            bikeCamera = GameObject.Find("Main Camera");
+            bikeCamera = GameObject.Find("Bike Camera");
             Debug.Log("Camera found");
         }
         //StartCoroutine(CalcVelocity());
@@ -28,9 +32,19 @@ public class MainEngine : MonoBehaviour {
         if (GameObject.Find("AnkleLeft"))
         {
             foot = GameObject.Find("AnkleLeft");
-            velocity = (foot.transform.position - oldFootPosition) / Time.deltaTime;
+            velocity5 = velocity4;
+            velocity4 = velocity3;
+            velocity3 = velocity2;
+            velocity2 = velocity;
+            var tmp = (foot.transform.position - oldFootPosition) / Time.deltaTime;
             oldFootPosition = foot.transform.position;
+            velocity = (tmp + velocity2 + velocity3 + velocity4 + velocity5) / 5;
+
             Debug.Log(velocity.magnitude);
+            if (velocity.magnitude > 1)
+            {
+                bikeCamera.transform.position += (cameraMovementZ * velocity.magnitude) / 4;
+            }
         }
     }
 
