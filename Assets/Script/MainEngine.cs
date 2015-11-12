@@ -18,7 +18,7 @@ public class MainEngine : MonoBehaviour {
     private GameObject bikeCamera;
     // Use this for initialization
     void Start () {
-        if (GameObject.Find("Main Camera"))
+        if (GameObject.Find("Bike Camera"))
         {
             bikeCamera = GameObject.Find("Bike Camera");
             Debug.Log("Camera found");
@@ -41,9 +41,9 @@ public class MainEngine : MonoBehaviour {
             velocity = (tmp + velocity2 + velocity3 + velocity4 + velocity5) / 5;
 
             Debug.Log(velocity.magnitude);
-            if (velocity.magnitude > 1)
+            if (velocity.magnitude > 1 && velocity.magnitude < 15)
             {
-                bikeCamera.transform.position += (cameraMovementZ * velocity.magnitude) / 4;
+                bikeCamera.transform.position += (cameraMovementZ * velocity.magnitude) / 10;
             }
         }
     }
