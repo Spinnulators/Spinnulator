@@ -59,7 +59,7 @@ public class MainEngine : MonoBehaviour {
 	}
 
 	void mouse(){
-		if (Input.GetAxis("Mouse Y")>0)
+		if (Input.GetAxis("Mouse Y")>0 || Input.GetAxis("Mouse Y")<0)
 		{
 			//foot = GameObject.Find("AnkleLeft");
 			
