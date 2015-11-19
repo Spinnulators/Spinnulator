@@ -29,24 +29,60 @@ public class MainEngine : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (GameObject.Find("AnkleLeft"))
-        {
-            foot = GameObject.Find("AnkleLeft");
-            velocity5 = velocity4;
-            velocity4 = velocity3;
-            velocity3 = velocity2;
-            velocity2 = velocity;
-            var tmp = (foot.transform.position - oldFootPosition) / Time.deltaTime;
-            oldFootPosition = foot.transform.position;
-            velocity = (tmp + velocity2 + velocity3 + velocity4 + velocity5) / 5;
-
-            Debug.Log(velocity.magnitude);
-            if (velocity.magnitude > 1 && velocity.magnitude < 15)
-            {
-                bikeCamera.transform.position += (cameraMovementZ * velocity.magnitude) / 10;
-            }
-        }
+		mouse();
     }
+
+	void Ankle(){
+		if (GameObject.Find("AnkleLeft"))
+		{
+			foot = GameObject.Find("AnkleLeft");
+			
+			velocity5 = velocity4;
+			velocity4 = velocity3;
+			velocity3 = velocity2;
+			velocity2 = velocity;
+			var tmp = (foot.transform.position - oldFootPosition) / Time.deltaTime;
+			oldFootPosition = foot.transform.position;
+			velocity = (tmp + velocity2 + velocity3 + velocity4 + velocity5) / 5;
+			
+			
+			Debug.Log(velocity.magnitude);
+			if (velocity.magnitude > 1 && velocity.magnitude < 10)
+			{
+				bikeCamera.transform.position += (cameraMovementZ * velocity.magnitude) / 10;
+			}
+			if (velocity.magnitude > 10)
+			{
+				bikeCamera.transform.position += new Vector3(0f,0f,0.4f);
+			}
+		}
+	}
+
+	void mouse(){
+		if (Input.GetAxis("Mouse Y")>0)
+		{
+			//foot = GameObject.Find("AnkleLeft");
+			
+			velocity5 = velocity4;
+			velocity4 = velocity3;
+			velocity3 = velocity2;
+			velocity2 = velocity;
+			var tmp = (new Vector3 (0f,Input.GetAxis("Mouse Y"),0f) - oldFootPosition) / Time.deltaTime;
+			oldFootPosition = new Vector3(0f,Input.GetAxis("Vertical"),0f);
+			velocity = (tmp + velocity2 + velocity3 + velocity4 + velocity5) / 5;
+			
+			
+			Debug.Log(velocity.magnitude);
+			if (velocity.magnitude > 1 && velocity.magnitude < 10)
+			{
+				bikeCamera.transform.position += (cameraMovementZ * velocity.magnitude) / 10;
+			}
+			if (velocity.magnitude > 10)
+			{
+				bikeCamera.transform.position += new Vector3(0f,0f,0.1f);
+			}
+		}
+	}
 
     //IEnumerator CalcVelocity()
     //{
