@@ -72,7 +72,7 @@ public class MainEngine : MonoBehaviour {
 			velocity = (tmp + velocity2 + velocity3 + velocity4 + velocity5) / 5;
 			
 			
-			Debug.Log(velocity.magnitude);
+			//Debug.Log(velocity.magnitude);
 			if (velocity.magnitude > 1 && velocity.magnitude < 10)
 			{
 				bikeCamera.transform.position += (cameraMovementZ * velocity.magnitude) / 10;
@@ -82,6 +82,14 @@ public class MainEngine : MonoBehaviour {
 				bikeCamera.transform.position += new Vector3(0f,0f,0.1f);
 			}
 		}
+		Debug.Log(bikeCamera.transform.position);
+		if (Input.GetAxis ("Mouse X") > 2 && cameraMovementX [0] < 1.5f) {
+			bikeCamera.transform.position += (cameraMovementX + new Vector3 (0.1f, 0f, 0f));
+		}
+		if (Input.GetAxis ("Mouse X") < -2 && cameraMovementX [0] > -1.5f) {
+			bikeCamera.transform.position -= (cameraMovementX - new Vector3 (0.1f, 0f, 0f));
+		}
+
 	}
 
     //IEnumerator CalcVelocity()
