@@ -12,7 +12,7 @@ public class MotionData {
 	}
 
 	// Add a new value in the list, pushes out old values if full
-	public void addMotionData(float data) {
+	public void add(float data) {
 
 		if (motionDataList.Count >= listSize) {
 			motionDataList.RemoveLast();
@@ -31,5 +31,7 @@ public class MotionData {
 		}
 
 		average = average / motionDataList.Count;
+
+		return average;
 	}
 }
