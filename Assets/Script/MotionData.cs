@@ -34,4 +34,8 @@ public class MotionData {
 
 		return average;
 	}
+
+    public int getCount() {
+        return motionDataList.Count;
+    }
 }

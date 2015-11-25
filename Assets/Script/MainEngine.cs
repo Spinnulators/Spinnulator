@@ -12,11 +12,12 @@ public class MainEngine : MonoBehaviour {
     private float shoulderMovement;
 	private float shoulderMovementDeadZone = 0.2f;
     private Vector3 footPosition;
+    private Vector3 prevFootPosition = new Vector3(0f, 0f, 0f);
 
 	private MotionData motionData;
-	public int motionDataSize = 200;
-	private float velocityMinTreshold = 1f;
-	private float velocityMaxTreshold = 15f;
+	private int motionDataSize = 20;
+	private float velocityMinTreshold = 0.1f;
+	private float velocityMaxTreshold = 2.0f;
 
     // Use this for initialization
     void Start () {
@@ -35,15 +36,23 @@ public class MainEngine : MonoBehaviour {
         {
             foot = GameObject.Find("AnkleLeft");
 
-            motionData.add(foot.transform.position.magnitude);
+            Vector3 vectorDistance = foot.transform.position - prevFootPosition;
+            motionData.add(vectorDistance.magnitude);
 
-			float averageVelocity = motionData.getAverage();
-		            
-			//Om hastigheten håller sig inom rimliga ramar så ska den överföras till spelet
-			if (averageVelocity > velocityMinTreshold && averageVelocity < velocityMaxTreshold)
+            prevFootPosition = foot.transform.position;
+
+            float movementScaleFactor = 0.8f;
+            float averageVelocity = motionData.getAverage();
+
+            // Debug.Log(averageVelocity + " " + motionData.getCount());
+            if (averageVelocity >= velocityMaxTreshold)
             {
-				float movementScaleFactor = 0.1f;
-				bikeCamera.transform.position += bikeCamera.transform.forward * averageVelocity;
+                averageVelocity = velocityMaxTreshold;
+            }
+            //Om hastigheten håller sig inom rimliga ramar så ska den överföras till spelet
+            if (averageVelocity > velocityMinTreshold && averageVelocity < velocityMaxTreshold)
+            {
+				bikeCamera.transform.position += bikeCamera.transform.forward * averageVelocity * movementScaleFactor;
             }
         }
         if (GameObject.Find("ShoulderLeft"))
@@ -67,13 +76,13 @@ public class MainEngine : MonoBehaviour {
                 shoulderMovement=shoulder.transform.position.x-shoulderInitPosition.x;
                 if (Mathf.Abs(shoulderMovement) > shoulderMovementDeadZone)
                 {
-					float rotationScalingFactor = motionData.getAverage() * 0.12f;
+					float rotationScalingFactor = motionData.getAverage() * 1.2f;
 
                     //om du lutar dig utanför deadzone så roteras kameran
                     Vector3 rotation = new Vector3(0f, shoulderMovement, 0f);
 
                     bikeCamera.transform.Rotate(rotation * rotationScalingFactor);
-                    Debug.Log(shoulderMovement);
+                //    Debug.Log(shoulderMovement);
                 }
                 
             }
