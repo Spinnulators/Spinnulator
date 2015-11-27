@@ -14,7 +14,10 @@ public class MainEngine : MonoBehaviour {
     private Vector3 footPosition;
     private Vector3 prevFootPosition = new Vector3(0f, 0f, 0f);
 
+	private KeyboardController keyboardController;
+	public CharacterController characterController;
 	private MotionData motionData;
+
 	private int motionDataSize = 20;
 	private float velocityMinTreshold = 0.1f;
 	private float velocityMaxTreshold = 2.0f;
@@ -28,64 +31,78 @@ public class MainEngine : MonoBehaviour {
         }
 
 		motionData = new MotionData (motionDataSize);
+		keyboardController = new KeyboardController ();
     }
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (GameObject.Find("AnkleLeft"))
-        {
-            foot = GameObject.Find("AnkleLeft");
-
-            Vector3 vectorDistance = foot.transform.position - prevFootPosition;
-            motionData.add(vectorDistance.magnitude);
-
-            prevFootPosition = foot.transform.position;
-
-            float movementScaleFactor = 0.8f;
-            float averageVelocity = motionData.getAverage();
-
-            // Debug.Log(averageVelocity + " " + motionData.getCount());
-            if (averageVelocity >= velocityMaxTreshold)
-            {
-                averageVelocity = velocityMaxTreshold;
-            }
-            //Om hastigheten håller sig inom rimliga ramar så ska den överföras till spelet
-            if (averageVelocity > velocityMinTreshold && averageVelocity < velocityMaxTreshold)
-            {
-				bikeCamera.transform.position += bikeCamera.transform.forward * averageVelocity * movementScaleFactor;
-            }
-        }
-        if (GameObject.Find("ShoulderLeft"))
-        {
-            shoulder = GameObject.Find("ShoulderLeft");
-            if (centered == false)
-            {
-                //Skapar en ursprungsposition varifrån alla andra positioner beror.
-                shoulderInitPosition = shoulder.transform.position;
-                centered = true;
-            }
-            if (Input.GetKeyDown(KeyCode.C))
-            {
-                //Resettar ursprungspositionen om det känns weird
-                shoulderInitPosition = shoulder.transform.position;
-                centered = true;
-            }
-            if (centered == true)
-            {
-                //Tar ut hur mycket du lutat dig i x-led
-                shoulderMovement=shoulder.transform.position.x-shoulderInitPosition.x;
-                if (Mathf.Abs(shoulderMovement) > shoulderMovementDeadZone)
-                {
-					float rotationScalingFactor = motionData.getAverage() * 1.2f;
-
-                    //om du lutar dig utanför deadzone så roteras kameran
-                    Vector3 rotation = new Vector3(0f, shoulderMovement, 0f);
-
-                    bikeCamera.transform.Rotate(rotation * rotationScalingFactor);
-                //    Debug.Log(shoulderMovement);
-                }
-                
-            }
-        }
+		computeFootTracking ();
+		computeShoulderTracking ();
     }
+
+	public void computeFootTracking () {
+
+		if (GameObject.Find ("AnkleLeft")) {
+			foot = GameObject.Find ("AnkleLeft");
+			
+			Vector3 vectorDistance = foot.transform.position - prevFootPosition;
+			motionData.add (vectorDistance.magnitude);
+			
+			prevFootPosition = foot.transform.position;
+			
+			float movementScaleFactor = 0.8f;
+			float averageVelocity = motionData.getAverage ();
+			
+			// Clamp velocity to max treshhold
+			averageVelocity = Mathf.Clamp(averageVelocity, 0f, velocityMaxTreshold);
+
+			// If the speed is above a treshhold, move the character
+			if (averageVelocity > velocityMinTreshold) {
+				moveForward (averageVelocity * movementScaleFactor);
+			}
+		} else {
+			// If we don't have Kinect tracking, use keyboard
+			moveForward(keyboardController.getForwardMovement() * 20.0f);
+		}
+	}
+
+	public void computeShoulderTracking () {
+		if (GameObject.Find ("ShoulderLeft")) {
+			shoulder = GameObject.Find ("ShoulderLeft");
+			if (centered == false) {
+				//Skapar en ursprungsposition varifrån alla andra positioner beror.
+				shoulderInitPosition = shoulder.transform.position;
+				centered = true;
+			}
+			if (Input.GetKeyDown (KeyCode.C)) {
+				//Resettar ursprungspositionen om det känns weird
+				shoulderInitPosition = shoulder.transform.position;
+				centered = true;
+			}
+			if (centered == true) {
+				//Tar ut hur mycket du lutat dig i x-led
+				shoulderMovement = shoulder.transform.position.x - shoulderInitPosition.x;
+
+				// om du lutar dig utanför deadzone så roteras kameran
+				if (Mathf.Abs (shoulderMovement) > shoulderMovementDeadZone) {
+					float rotationScalingFactor = motionData.getAverage () * 1.2f;
+					rotateHorizontal (shoulderMovement * rotationScalingFactor);
+				}
+				
+			}
+		} else {
+			// If we don't have Kinect tracking, use keyboard
+			rotateHorizontal(keyboardController.getHorizontalRotation());
+		}
+	}
+
+	public void moveForward(float speed) {
+		//bikeCamera.transform.position += bikeCamera.transform.forward * speed;
+		characterController.SimpleMove(bikeCamera.transform.forward * speed);
+	}
+
+	public void rotateHorizontal(float rotationAngle) {
+		Vector3 rotationVector = new Vector3(0f, rotationAngle, 0f);
+		bikeCamera.transform.Rotate(rotationVector);
+	}
 }
