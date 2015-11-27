@@ -6,6 +6,9 @@ public class PlayerController : MonoBehaviour {
 	public CharacterController characterController;
 	private ControlInterface controlInterface;
 
+	// Higher speeds need higher gravity
+	private float gravity = 14.81f;
+
 	/* VELOCITY */
 	// How much the velocity is scaled
 	private float velocityScaleFactor = 20.0f;
@@ -23,11 +26,18 @@ public class PlayerController : MonoBehaviour {
 	// How much the rotation is scaled by the velocity
 	private float rotationVelocityScaleFactor = 0.5f;
 
+	// How much you are able to rotate in the air
+	private float airborneRotationScale = 0.5f;
+
 	// Minimum treshold, below this will equal zero
 	private float rotationDeadzone = 0.1f;
 
 	// Max treshold, values above this will be reduced
 	private float rotationMaxTreshold = 2.0f;
+
+	// How much momentum is reduced every frame
+	private float momentumReductionFactor = 0.2f;
+	private float momentum;
 
 	// Use this for initialization
 	void Start () {
@@ -78,9 +88,13 @@ public class PlayerController : MonoBehaviour {
 
 	public void moveForward(float velocity) {
 
-		float gravity = 9.81f;
+		momentum -= momentumReductionFactor;
 
-		Vector3 moveDirection = characterController.transform.forward * velocity * Time.deltaTime;
+		if (velocity > momentum) {
+			momentum = velocity;
+		}
+
+		Vector3 moveDirection = characterController.transform.forward * momentum * Time.deltaTime;
 		moveDirection.y -= gravity * Time.deltaTime;
 
 		characterController.Move(moveDirection);
@@ -89,7 +103,6 @@ public class PlayerController : MonoBehaviour {
 	public void rotateHorizontal(float rotationAngle) {
 
 		Vector3 rotationVector;
-		float airborneRotationScale = 0.5f;
 
 		// If we are in the air, our turn rate is reduced
 		if (characterController.isGrounded) {
