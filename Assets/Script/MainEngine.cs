@@ -98,6 +98,9 @@ public class MainEngine : MonoBehaviour {
 
 	public void moveForward(float speed) {
 		//bikeCamera.transform.position += bikeCamera.transform.forward * speed;
+
+		//float slopeSpeedMultiplier = AnimationCurve(Keyframe(-90, 1), Keyframe(0, 1), Keyframe(90, 0));
+
 		characterController.SimpleMove(bikeCamera.transform.forward * speed);
 	}
 

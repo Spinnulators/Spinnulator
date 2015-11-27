@@ -226,7 +226,7 @@ private function UpdateFunction () {
 	groundNormal = Vector3.zero;
 	
    	// Move our character!
-	movement.collisionFlags = controller.Move (currentMovementOffset);
+	//movement.collisionFlags = controller.Move (currentMovementOffset);
 	
 	movement.lastHitPoint = movement.hitPoint;
 	lastGroundNormal = groundNormal;
