@@ -1028,7 +1028,7 @@ GameObject:
   - 4: {fileID: 766091486}
   - 114: {fileID: 766091485}
   m_Layer: 0
-  m_Name: _MainEngine
+  m_Name: KinectInterface
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1045,7 +1045,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 928682646de97344794996bdb8cce23a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterController: {fileID: 1955165965}
 --- !u!4 &766091486
 Transform:
   m_ObjectHideFlags: 0
@@ -2618,6 +2617,7 @@ GameObject:
   - 114: {fileID: 1955165963}
   - 114: {fileID: 1955165962}
   - 143: {fileID: 1955165965}
+  - 114: {fileID: 1955165966}
   m_Layer: 0
   m_Name: First Person Controller
   m_TagString: Untagged
@@ -2742,9 +2742,21 @@ CharacterController:
   m_Radius: .400000006
   m_SlopeLimit: 60
   m_StepOffset: .400000006
-  m_SkinWidth: 1
+  m_SkinWidth: .100000001
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1955165966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1955165960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f72a14c3e874cd4ca630cb4dda0395e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterController: {fileID: 1955165965}
 --- !u!1001 &1994717086
 Prefab:
   m_ObjectHideFlags: 0

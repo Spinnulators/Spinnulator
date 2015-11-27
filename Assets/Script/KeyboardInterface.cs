@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class KeyboardController : MonoBehaviour {
+public class KeyboardInterface : MonoBehaviour {
 
-	public float getHorizontalRotation() {
+	public float getRotationHorizontal() {
 		return Input.GetAxis ("Horizontal");
 	}
 
-	public float getForwardMovement() {
+	public float getMovementForward() {
 		float forward = Input.GetAxis ("Vertical");
 
 		return Mathf.Clamp01 (forward);
