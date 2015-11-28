@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour {
 	private ControlInterface controlInterface;
 	
 	// Higher speeds need higher gravity
-	private float gravity = 14.81f;
+	private float gravity = 18f;
 	
 	/* VELOCITY */
 	// How much the velocity is scaled
@@ -88,28 +88,58 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	public void move(float velocity) {
-		
-		float momentumIncreaseFactor = 0.7f;
-		
-		if (characterController.isGrounded) {
-			velocity *= (1f - normalizeSlopeAngle (slopeAngle));
-			momentum = reduceMomentum(momentum, slopeAngle);
-		} else {
-			momentum -= momentumReductionFactor;
-		}
-		
-		if (momentum < velocity) {
 
-			momentum = Mathf.Max (momentum, momentum + velocity * momentumIncreaseFactor * Time.deltaTime);
-			momentum = Mathf.Min (momentum, velocity);
-		}
-		
+		// Velocity is scaled by slope angle
+		velocity *= (1f - normalizeSlopeAngle (slopeAngle));
+
+		momentum = reduceMomentum (momentum);
+		momentum = addVelocityToMomentum (momentum, velocity);
+
 		print("Momentum: " + momentum + ", Velocity:" + velocity);
 		
 		Vector3 moveDirection = characterController.transform.forward * momentum * Time.deltaTime;
 		moveDirection.y -= gravity * Time.deltaTime;
 		
 		characterController.Move(moveDirection);
+	}
+
+	// Reduces momentum depending on if grounded or not
+	private float reduceMomentum(float momentum) {
+		
+		float slopeMomentumReductionFactor = 0.5f;
+		
+		if (characterController.isGrounded) {
+			
+			// Take into account slope angle to reduce momentum
+			momentum -= momentumReductionFactor * (1f + normalizeSlopeAngle(slopeAngle) * slopeMomentumReductionFactor);
+		} else {
+			momentum -= momentumReductionFactor;
+		}
+		
+		if (momentum < 0f) {
+			return 0f;
+		}
+		
+		return momentum;
+	}
+	
+	// Adds a part of the velocity to the momentum
+	private float addVelocityToMomentum(float momentum, float velocity) {
+		
+		float velocityFactor = 0.7f;
+		
+		if (momentum < velocity) {
+			
+			float velocityIncreaseFactor = velocity * velocityFactor * Time.deltaTime;
+			
+			// We add only a part of the velocity to momentum
+			momentum = Mathf.Max (momentum, momentum + velocityIncreaseFactor);
+			
+			// Momentum can never be greater than velocity
+			momentum = Mathf.Min (momentum, velocity);
+		}
+		
+		return momentum;
 	}
 	
 	public void rotateHorizontal(float rotationAngle) {
@@ -130,23 +160,6 @@ public class PlayerController : MonoBehaviour {
 		// We are comparing the angle between terrain normal and forward vector
 		// We need to reduce by 90 to compare terrain direction and forward vector
 		slopeAngle = Vector3.Angle(characterController.transform.forward, hit.normal) - 90f;
-	}
-	
-	private float reduceMomentum(float momentum) {
-		return reduceMomentum (momentum, 0f);
-	}
-	
-	private float reduceMomentum (float momentum, float slopeAngle) {
-
-		float slopeMomentumReductionFactor = 0.5f;
-
-		float newMomentum = momentum - momentumReductionFactor * (1f + normalizeSlopeAngle(slopeAngle) * slopeMomentumReductionFactor);
-		
-		if (newMomentum < 0f) {
-			return 0f;
-		}
-		
-		return newMomentum;
 	}
 	
 	// Clamps an angle to +- treshold, normalizes to [-1, 1]
