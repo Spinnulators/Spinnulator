@@ -134,9 +134,6 @@ public class PlayerController : MonoBehaviour {
 			
 			// We add only a part of the velocity to momentum
 			momentum = Mathf.Max (momentum, momentum + velocityIncreaseFactor);
-			
-			// Momentum can never be greater than velocity
-			momentum = Mathf.Min (momentum, velocity);
 		}
 		
 		return momentum;
