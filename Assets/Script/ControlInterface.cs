@@ -27,4 +27,8 @@ public class ControlInterface : MonoBehaviour {
 			return keyboardInterface.getRotationHorizontal();
 		}
 	}
+
+	public bool isJumpButtonPressed() {
+		return keyboardInterface.isSpacebarPressed ();
+	}
 }

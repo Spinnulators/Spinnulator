@@ -12,4 +12,8 @@ public class KeyboardInterface : MonoBehaviour {
 
 		return Mathf.Clamp01 (forward);
 	}
+
+	public bool isSpacebarPressed() {
+		return Input.GetKey (KeyCode.Space);
+	}
 }
