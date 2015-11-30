@@ -4,6 +4,8 @@ using System.Collections;
 public class PlayerController : MonoBehaviour {
 	
 	public CharacterController characterController;
+	public Camera bikeCamera;
+
 	private ControlInterface controlInterface;
 	
 	// Higher speeds need higher gravity
@@ -88,6 +90,16 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	public void move(float velocity) {
+
+		float slopeAngleCameraTiltFactor = 0.5f;
+
+		// Rotate camera according to slope
+		if (characterController.isGrounded) {
+			Vector3 cameraRotationVector = characterController.transform.forward;
+			cameraRotationVector = Quaternion.AngleAxis (slopeAngle * slopeAngleCameraTiltFactor, -characterController.transform.right) * cameraRotationVector;
+
+			bikeCamera.transform.forward = cameraRotationVector;
+		}
 
 		// Velocity is scaled by slope angle
 		velocity *= (1f - normalizeSlopeAngle (slopeAngle));

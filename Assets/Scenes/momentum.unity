@@ -2657,6 +2657,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterController: {fileID: 1955165965}
+  bikeCamera: {fileID: 1644649089}
 --- !u!1001 &1994717086
 Prefab:
   m_ObjectHideFlags: 0
