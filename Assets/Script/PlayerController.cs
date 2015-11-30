@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour {
 	private float velocityMinTreshold = 0.0f;
 	
 	// Max treshold, values above this will be reduced
-	private float velocityMaxTreshold = 10.0f;
+	private float velocityMaxTreshold = 30.0f;
 	
 	/* ROTATION */
 	// How much the rotation is scaled
@@ -147,7 +147,8 @@ public class PlayerController : MonoBehaviour {
 			// We add only a part of the velocity to momentum
 			momentum = Mathf.Max (momentum, momentum + velocityIncreaseFactor);
 		}
-		
+
+        momentum = Mathf.Clamp(momentum, 0, velocityMaxTreshold);
 		return momentum;
 	}
 	

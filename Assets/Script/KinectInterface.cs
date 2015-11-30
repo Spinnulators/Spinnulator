@@ -10,7 +10,6 @@ public class KinectInterface : MonoBehaviour {
 
 	private KeyboardInterface keyboardController;
 	private MotionData ankleVelocityMotionData;
-    float distance;
 
 	private int motionDataSize = 20;
 
@@ -18,10 +17,6 @@ public class KinectInterface : MonoBehaviour {
     public KinectInterface () {
 		ankleVelocityMotionData = new MotionData (motionDataSize);
     }
-
-	void FixedUpdate() {
-		updateAnkleVelocity ();
-	}
 	
 	public bool isAnkleLeftFound() {
 		return GameObject.Find ("AnkleLeft");
@@ -44,8 +39,15 @@ public class KinectInterface : MonoBehaviour {
 		if (isAnkleLeftFound()) {
 			Vector3 footPosition = getAnkleLeftPosition ();
 			
-			distance = Vector3.Distance (footPosition, prevFootPosition);
-			ankleVelocityMotionData.add (distance);
+			Vector3 distance = footPosition - prevFootPosition;
+            Debug.Log("actual:" + footPosition + "old:" + prevFootPosition);
+            float dist = distance.magnitude*6f;
+            Debug.Log(dist);
+            if (dist < 24f)
+            {
+                ankleVelocityMotionData.add(dist);
+            }
+            
 			
 			prevFootPosition = footPosition;
 		}
@@ -53,8 +55,9 @@ public class KinectInterface : MonoBehaviour {
 
 	// Get interpolated ankle velocity
 	public float getAnkleVelocity () {
-        return distance;
-		return ankleVelocityMotionData.getAverage ();
+        //return distance;
+        updateAnkleVelocity();
+        return ankleVelocityMotionData.getAverage ();
 	}
 
 	private void initShoulderPosition(Vector3 shoulderPosition) {
@@ -69,9 +72,13 @@ public class KinectInterface : MonoBehaviour {
 
 			Vector3 shoulderPosition = getShoulderLeftPosition();
 
-			if (centered == false || Input.GetKeyDown (KeyCode.C)) {
-				initShoulderPosition(shoulderPosition);
-			}
+            if (centered == false || Input.GetKeyDown(KeyCode.C)) {
+                initShoulderPosition(shoulderPosition);
+            }
+            else if (Input.GetKeyDown(KeyCode.C))
+            {
+                initShoulderPosition(shoulderPosition);
+            }
 
 			//Tar ut hur mycket du lutat dig i x-led
 			float shoulderMovementHorizontal = shoulderPosition.x - shoulderInitPosition.x;
