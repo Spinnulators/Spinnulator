@@ -16,7 +16,8 @@ public class ControlInterface : MonoBehaviour {
 		if (kinectInterface.isAnkleLeftFound ()) {
 			return kinectInterface.getAnkleVelocity();
 		} else {
-			return keyboardInterface.getMovementForward();
+            print("left ankle not fount");
+            return keyboardInterface.getMovementForward();
 		}
 	}
 

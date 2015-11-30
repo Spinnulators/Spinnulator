@@ -10,12 +10,12 @@ public class KinectInterface : MonoBehaviour {
 
 	private KeyboardInterface keyboardController;
 	private MotionData ankleVelocityMotionData;
+    float distance;
 
 	private int motionDataSize = 20;
 
 
-    // Use this for initialization
-    void Start () {
+    public KinectInterface () {
 		ankleVelocityMotionData = new MotionData (motionDataSize);
     }
 
@@ -44,7 +44,7 @@ public class KinectInterface : MonoBehaviour {
 		if (isAnkleLeftFound()) {
 			Vector3 footPosition = getAnkleLeftPosition ();
 			
-			float distance = Vector3.Distance (footPosition, prevFootPosition);
+			distance = Vector3.Distance (footPosition, prevFootPosition);
 			ankleVelocityMotionData.add (distance);
 			
 			prevFootPosition = footPosition;
@@ -53,6 +53,7 @@ public class KinectInterface : MonoBehaviour {
 
 	// Get interpolated ankle velocity
 	public float getAnkleVelocity () {
+        return distance;
 		return ankleVelocityMotionData.getAverage ();
 	}
 

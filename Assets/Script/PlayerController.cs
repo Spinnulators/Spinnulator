@@ -13,10 +13,10 @@ public class PlayerController : MonoBehaviour {
 	
 	/* VELOCITY */
 	// How much the velocity is scaled
-	private float velocityScaleFactor = 20.0f;
+	private float velocityScaleFactor = 30.0f;
 	
 	// Minimum treshold, below this will equal zero
-	private float velocityMinTreshold = 0.1f;
+	private float velocityMinTreshold = 0.0f;
 	
 	// Max treshold, values above this will be reduced
 	private float velocityMaxTreshold = 10.0f;
@@ -107,7 +107,7 @@ public class PlayerController : MonoBehaviour {
 		momentum = reduceMomentum (momentum);
 		momentum = addVelocityToMomentum (momentum, velocity);
 
-		print("Momentum: " + momentum + ", Velocity:" + velocity);
+		//print("Momentum: " + momentum + ", Velocity:" + velocity);
 		
 		Vector3 moveDirection = characterController.transform.forward * momentum * Time.deltaTime;
 		moveDirection.y -= gravity * Time.deltaTime;
