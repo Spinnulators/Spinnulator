@@ -40,9 +40,9 @@ public class KinectInterface : MonoBehaviour {
 			Vector3 footPosition = getAnkleLeftPosition ();
 			
 			Vector3 distance = footPosition - prevFootPosition;
-            Debug.Log("actual:" + footPosition + "old:" + prevFootPosition);
+            //Debug.Log("actual:" + footPosition + "old:" + prevFootPosition);
             float dist = distance.magnitude*6f;
-            Debug.Log(dist);
+            //Debug.Log(dist);
             if (dist < 24f)
             {
                 ankleVelocityMotionData.add(dist);

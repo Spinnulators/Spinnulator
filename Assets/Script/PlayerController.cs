@@ -13,20 +13,20 @@ public class PlayerController : MonoBehaviour {
 	
 	/* VELOCITY */
 	// How much the velocity is scaled
-	private float velocityScaleFactor = 30.0f;
+	private float velocityScaleFactor = 28.0f;
 	
 	// Minimum treshold, below this will equal zero
 	private float velocityMinTreshold = 0.0f;
 	
 	// Max treshold, values above this will be reduced
-	private float velocityMaxTreshold = 30.0f;
+	private float velocityMaxTreshold = 27.0f;
 	
 	/* ROTATION */
 	// How much the rotation is scaled
-	private float rotationScaleFactor = 1.5f;
+	private float rotationScaleFactor = 1.0f;
 	
 	// How much the rotation is scaled by the velocity
-	private float rotationVelocityScaleFactor = 0.5f;
+	private float rotationVelocityScaleFactor = 0.6f;
 	
 	// How much you are able to rotate in the air
 	private float airborneRotationScale = 0.5f;
@@ -62,10 +62,10 @@ public class PlayerController : MonoBehaviour {
 		if (velocity < velocityMinTreshold) {
 			return 0.0f;
 		}
+        velocity *= velocityScaleFactor;
+        velocity = Mathf.Clamp (velocity, velocityMinTreshold, velocityMaxTreshold);
 		
-		velocity = Mathf.Clamp (velocity, velocityMinTreshold, velocityMaxTreshold);
-		
-		return velocity * velocityScaleFactor;
+		return velocity;
 	}
 	
 	public float scaleRotation(float rotation) {
@@ -92,13 +92,14 @@ public class PlayerController : MonoBehaviour {
 	public void move(float velocity) {
 
 		float slopeAngleCameraTiltFactor = 0.5f;
+        float cameraRotationScaleFactor = 0.05f;
 
-		// Rotate camera according to slope
-		if (characterController.isGrounded) {
+        // Rotate camera according to slope
+        if (characterController.isGrounded) {
 			Vector3 cameraRotationVector = characterController.transform.forward;
 			cameraRotationVector = Quaternion.AngleAxis (slopeAngle * slopeAngleCameraTiltFactor, -characterController.transform.right) * cameraRotationVector;
-
-			bikeCamera.transform.forward = cameraRotationVector;
+            Vector3 cameraRotationDistance = cameraRotationVector - bikeCamera.transform.forward;
+			bikeCamera.transform.forward += cameraRotationDistance * cameraRotationScaleFactor;
 		}
 
 		// Velocity is scaled by slope angle
@@ -107,7 +108,7 @@ public class PlayerController : MonoBehaviour {
 		momentum = reduceMomentum (momentum);
 		momentum = addVelocityToMomentum (momentum, velocity);
 
-		//print("Momentum: " + momentum + ", Velocity:" + velocity);
+		print("Momentum: " + momentum + ", Velocity:" + velocity);
 		
 		Vector3 moveDirection = characterController.transform.forward * momentum * Time.deltaTime;
 		moveDirection.y -= gravity * Time.deltaTime;
@@ -118,7 +119,7 @@ public class PlayerController : MonoBehaviour {
 	// Reduces momentum depending on if grounded or not
 	private float reduceMomentum(float momentum) {
 		
-		float slopeMomentumReductionFactor = 0.5f;
+		float slopeMomentumReductionFactor = 0.4f;
 		
 		if (characterController.isGrounded) {
 			
@@ -148,7 +149,6 @@ public class PlayerController : MonoBehaviour {
 			momentum = Mathf.Max (momentum, momentum + velocityIncreaseFactor);
 		}
 
-        momentum = Mathf.Clamp(momentum, 0, velocityMaxTreshold);
 		return momentum;
 	}
 	
