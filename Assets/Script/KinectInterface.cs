@@ -60,9 +60,9 @@ public class KinectInterface : MonoBehaviour {
         return ankleVelocityMotionData.getAverage ();
 	}
 
-	private void initShoulderPosition(Vector3 shoulderPosition) {
+	public void calibrateShoulderPosition() {
 		//Skapar en ursprungsposition varifrån alla andra positioner beror.
-		shoulderInitPosition = shoulderPosition;
+		shoulderInitPosition = getShoulderLeftPosition();
 		centered = true;
 	}
 
@@ -73,11 +73,7 @@ public class KinectInterface : MonoBehaviour {
 			Vector3 shoulderPosition = getShoulderLeftPosition();
 
             if (centered == false || Input.GetKeyDown(KeyCode.C)) {
-                initShoulderPosition(shoulderPosition);
-            }
-            else if (Input.GetKeyDown(KeyCode.C))
-            {
-                initShoulderPosition(shoulderPosition);
+                calibrateShoulderPosition();
             }
 
 			//Tar ut hur mycket du lutat dig i x-led
