@@ -29,7 +29,7 @@ public class BodySourceManager : MonoBehaviour
         }   
     }
     
-    void Update () 
+    void FixedUpdate () 
     {
         if (_Reader != null)
         {
