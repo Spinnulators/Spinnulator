@@ -72,7 +72,7 @@ public class KinectInterface : MonoBehaviour {
 
 			Vector3 shoulderPosition = getShoulderLeftPosition();
 
-            if (centered == false || Input.GetKeyDown(KeyCode.C)) {
+            if (!centered) {
                 calibrateShoulderPosition();
             }
 

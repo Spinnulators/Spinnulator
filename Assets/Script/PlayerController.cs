@@ -7,7 +7,11 @@ public class PlayerController : MonoBehaviour {
 	public CharacterController characterController;
 	public Camera bikeCamera;
 
+    private GameObject sensorView;
+
 	private ControlInterface controlInterface;
+
+    private bool reversed = false;
 	
 	// Higher speeds need higher gravity
 	private float gravity = 20f;
@@ -24,7 +28,7 @@ public class PlayerController : MonoBehaviour {
 	
 	/* ROTATION */
 	// How much the rotation is scaled
-	private float rotationScaleFactor = 1.0f;
+	private float rotationScaleFactor = 0.8f;
 	
 	// How much the rotation is scaled by the velocity
 	private float rotationVelocityScaleFactor = 0.6f;
@@ -39,7 +43,7 @@ public class PlayerController : MonoBehaviour {
 	private float rotationMaxTreshold = 2.0f;
 	
 	// How much momentum is reduced every frame
-	private float momentumReductionFactor = 0.15f;
+	private float momentumReductionFactor = 0.135f;
 	private float momentum;
 	private float slopeAngle;
 
@@ -53,6 +57,10 @@ public class PlayerController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		controlInterface = new ControlInterface ();
+        if (GameObject.Find("SensorView"))
+        {
+            sensorView = GameObject.Find("SensorView");
+        }
 	}
 	
 	// Update is called once per frame
@@ -70,9 +78,22 @@ public class PlayerController : MonoBehaviour {
 				endGame();
 			}
 
-		} else if (controlInterface.isSpacebarPressed () && !hasEnded) {
-			startGame();
+		} else if (controlInterface.isStartKeyPressed () && !hasEnded) {
+            startGame();
 		}
+
+        if (controlInterface.isReverseRotationKeyPressed ()) {
+            reversed = !reversed;
+        }
+
+        if (controlInterface.isToggleKinectViewKeyPressed ()) {
+            toggleKinectView();
+        }
+
+        if (controlInterface.isCalibrateKeyPressed ()) {
+            controlInterface.calibrate();
+        }
+
 	}
 
 	private void startGame() {
@@ -87,13 +108,25 @@ public class PlayerController : MonoBehaviour {
 
 		timeManager = GameObject.Find ("TimeText").GetComponent<TimeManager>();
 		timeManager.enable ();
-	}
+        if (sensorView.activeSelf)
+        {
+            sensorView.SetActive(false);
+        }
+    }
 
 	private void endGame() {
 		hasEnded = true;
 		introPanel.SetActive (true);
 		introText.text = "Thank you for playing";
 	}
+
+    private void toggleKinectView() {
+        if (sensorView.activeSelf) {
+            sensorView.SetActive(false);
+        } else {
+            sensorView.SetActive(true);
+        }
+    }
 	
 	private float scaleVelocity(float velocity) {
 		if (velocity < velocityMinTreshold) {
@@ -119,7 +152,10 @@ public class PlayerController : MonoBehaviour {
 		if (rotation < -rotationMaxTreshold) {
 			rotation = -rotationMaxTreshold;
 		}
-		
+        if (reversed)
+        {
+            rotation = -rotation;
+        }
 		// At 0 rVSF this equals 1, at 1 rVSF this equals the movement forward
 		float rotationVelocityFactor = ((1f - rotationVelocityScaleFactor) + rotationVelocityScaleFactor * controlInterface.getMovementForward ());
 		
@@ -156,7 +192,7 @@ public class PlayerController : MonoBehaviour {
 	// Reduces momentum depending on if grounded or not
 	private float reduceMomentum(float momentum) {
 		
-		float slopeMomentumReductionFactor = 0.4f;
+		float slopeMomentumReductionFactor = 0.65f;
 		
 		if (characterController.isGrounded) {
 			

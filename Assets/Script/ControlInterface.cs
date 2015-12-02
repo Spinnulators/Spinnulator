@@ -28,13 +28,27 @@ public class ControlInterface : MonoBehaviour {
 		}
 	}
 
+    public bool isCalibrateKeyPressed() {
+        return (Input.GetKey(KeyCode.C) || Input.GetKey(KeyCode.Mouse1));
+    }
+
 	public void calibrate() {
 		if (kinectInterface.isShoulderLeftFound ()) {
 			kinectInterface.calibrateShoulderPosition ();
 		}
 	}
 
-	public bool isSpacebarPressed() {
-		return keyboardInterface.isSpacebarPressed ();
+	public bool isStartKeyPressed() {
+		return (keyboardInterface.isSpacebarPressed () || Input.GetKey(KeyCode.Mouse0));
 	}
+
+    public bool isReverseRotationKeyPressed()
+    {
+        return Input.GetKey(KeyCode.R);
+    }
+
+    public bool isToggleKinectViewKeyPressed()
+    {
+        return Input.GetKey(KeyCode.K);
+    }
 }
