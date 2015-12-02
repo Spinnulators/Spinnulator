@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour {
 	
 	// How much momentum is reduced every frame
 	private float momentumReductionFactor = 0.135f;
-	private float momentum;
+	public float momentum;
 	private float slopeAngle;
 
 	private bool hasStarted = false;
