@@ -6,12 +6,12 @@ public class PlayerController : MonoBehaviour {
 	
 	public CharacterController characterController;
 	public Camera bikeCamera;
-
-    private GameObject sensorView;
-
+	
+	private GameObject sensorView;
+	
 	private ControlInterface controlInterface;
-
-    private bool reversed = false;
+	
+	private bool reversed = false;
 	
 	// Higher speeds need higher gravity
 	private float gravity = 20f;
@@ -44,12 +44,12 @@ public class PlayerController : MonoBehaviour {
 	
 	// How much momentum is reduced every frame
 	private float momentumReductionFactor = 0.135f;
-	private float momentum;
+	public float momentum;
 	private float slopeAngle;
-
+	
 	private bool hasStarted = false;
 	private bool hasEnded = false;
-
+	
 	private TimeManager timeManager;
 	private GameObject introPanel;
 	private Text introText;
@@ -57,10 +57,10 @@ public class PlayerController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		controlInterface = new ControlInterface ();
-        if (GameObject.Find("SensorView"))
-        {
-            sensorView = GameObject.Find("SensorView");
-        }
+		if (GameObject.Find("SensorView"))
+		{
+			sensorView = GameObject.Find("SensorView");
+		}
 	}
 	
 	// Update is called once per frame
@@ -69,71 +69,71 @@ public class PlayerController : MonoBehaviour {
 			float velocity = controlInterface.getMovementForward ();
 			velocity = scaleVelocity (velocity);
 			move (velocity);
-		
+			
 			float rotation = controlInterface.getRotationHorizontal ();
 			rotation = scaleRotation (rotation);
 			rotateHorizontal (rotation);
-
+			
 			if(timeManager != null && timeManager.hasEnded()) {
 				endGame();
 			}
-
+			
 		} else if (controlInterface.isStartKeyPressed () && !hasEnded) {
-            startGame();
+			startGame();
 		}
-
-        if (controlInterface.isReverseRotationKeyPressed ()) {
-            reversed = !reversed;
-        }
-
-        if (controlInterface.isToggleKinectViewKeyPressed ()) {
-            toggleKinectView();
-        }
-
-        if (controlInterface.isCalibrateKeyPressed ()) {
-            controlInterface.calibrate();
-        }
-
+		
+		if (controlInterface.isReverseRotationKeyPressed ()) {
+			reversed = !reversed;
+		}
+		
+		if (controlInterface.isToggleKinectViewKeyPressed ()) {
+			toggleKinectView();
+		}
+		
+		if (controlInterface.isCalibrateKeyPressed ()) {
+			controlInterface.calibrate();
+		}
+		
 	}
-
+	
 	private void startGame() {
 		hasStarted = true;
 		controlInterface.calibrate();
-
+		
 		introPanel = GameObject.Find ("IntroPanel");
 		introPanel.SetActive (false);
-
+		
 		introText = GameObject.Find ("IntroText").GetComponent<Text> ();
 		introText.text = "";
-
+		
 		timeManager = GameObject.Find ("TimeText").GetComponent<TimeManager>();
 		timeManager.enable ();
-        if (sensorView.activeSelf)
-        {
-            sensorView.SetActive(false);
-        }
-    }
-
+		if (sensorView.activeSelf)
+		{
+			sensorView.SetActive(false);
+		}
+	}
+	
 	private void endGame() {
 		hasEnded = true;
 		introPanel.SetActive (true);
 		introText.text = "Thank you for playing";
 	}
-
-    private void toggleKinectView() {
-        if (sensorView.activeSelf) {
-            sensorView.SetActive(false);
-        } else {
-            sensorView.SetActive(true);
-        }
-    }
+	
+	private void toggleKinectView() {
+		if (sensorView.activeSelf) {
+			sensorView.SetActive(false);
+		} else {
+			sensorView.SetActive(true);
+		}
+	}
 	
 	private float scaleVelocity(float velocity) {
 		if (velocity < velocityMinTreshold) {
 			return 0.0f;
 		}
-        velocity *= velocityScaleFactor;
-        velocity = Mathf.Clamp (velocity, velocityMinTreshold, velocityMaxTreshold);
+		velocity *= velocityScaleFactor;
+		velocity = Mathf.Clamp (velocity, velocityMinTreshold, velocityMaxTreshold);
 		
 		return velocity;
 	}
@@ -152,10 +152,10 @@ public class PlayerController : MonoBehaviour {
 		if (rotation < -rotationMaxTreshold) {
 			rotation = -rotationMaxTreshold;
 		}
-        if (reversed)
-        {
-            rotation = -rotation;
-        }
+		if (reversed)
+		{
+			rotation = -rotation;
+		}
 		// At 0 rVSF this equals 1, at 1 rVSF this equals the movement forward
 		float rotationVelocityFactor = ((1f - rotationVelocityScaleFactor) + rotationVelocityScaleFactor * controlInterface.getMovementForward ());
 		
@@ -163,24 +163,25 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	public void move(float velocity) {
-
+		
 		float slopeAngleCameraTiltFactor = 0.5f;
-        float cameraRotationScaleFactor = 0.05f;
-
-        // Rotate camera according to slope
-        if (characterController.isGrounded) {
-			Vector3 cameraRotationVector = characterController.transform.forward;
-			cameraRotationVector = Quaternion.AngleAxis (slopeAngle * slopeAngleCameraTiltFactor, -characterController.transform.right) * cameraRotationVector;
-            Vector3 cameraRotationDistance = cameraRotationVector - bikeCamera.transform.forward;
-			bikeCamera.transform.forward += cameraRotationDistance * cameraRotationScaleFactor;
-		}
-
-		// Velocity is scaled by slope angle
-		velocity *= (1f - normalizeSlopeAngle (slopeAngle));
+		float cameraRotationScaleFactor = 0.05f;
 
 		momentum = reduceMomentum (momentum);
-		momentum = addVelocityToMomentum (momentum, velocity);
 
+		// Rotate camera according to slope
+		if (characterController.isGrounded) {
+
+			Vector3 cameraRotationVector = characterController.transform.forward;
+			cameraRotationVector = Quaternion.AngleAxis (slopeAngle * slopeAngleCameraTiltFactor, -characterController.transform.right) * cameraRotationVector;
+			Vector3 cameraRotationDistance = cameraRotationVector - bikeCamera.transform.forward;
+			bikeCamera.transform.forward += cameraRotationDistance * cameraRotationScaleFactor;
+			
+			// Velocity is scaled by slope angle
+			velocity *= (1f - normalizeSlopeAngle (slopeAngle));
+			momentum = addVelocityToMomentum (momentum, velocity);
+		}
+		
 		print("Momentum: " + momentum + ", Velocity:" + velocity);
 		
 		Vector3 moveDirection = characterController.transform.forward * momentum * Time.deltaTime;
@@ -188,7 +189,7 @@ public class PlayerController : MonoBehaviour {
 		
 		characterController.Move(moveDirection);
 	}
-
+	
 	// Reduces momentum depending on if grounded or not
 	private float reduceMomentum(float momentum) {
 		
@@ -221,7 +222,7 @@ public class PlayerController : MonoBehaviour {
 			// We add only a part of the velocity to momentum
 			momentum = Mathf.Max (momentum, momentum + velocityIncreaseFactor);
 		}
-
+		
 		return momentum;
 	}
 	
