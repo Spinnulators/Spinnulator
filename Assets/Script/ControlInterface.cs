@@ -16,7 +16,6 @@ public class ControlInterface : MonoBehaviour {
 		if (kinectInterface.isAnkleLeftFound ()) {
 			return kinectInterface.getAnkleVelocity();
 		} else {
-            print("left ankle not fount");
             return keyboardInterface.getMovementForward();
 		}
 	}
@@ -29,7 +28,13 @@ public class ControlInterface : MonoBehaviour {
 		}
 	}
 
-	public bool isJumpButtonPressed() {
+	public void calibrate() {
+		if (kinectInterface.isShoulderLeftFound ()) {
+			kinectInterface.calibrateShoulderPosition ();
+		}
+	}
+
+	public bool isSpacebarPressed() {
 		return keyboardInterface.isSpacebarPressed ();
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class PlayerController : MonoBehaviour {
@@ -9,7 +10,7 @@ public class PlayerController : MonoBehaviour {
 	private ControlInterface controlInterface;
 	
 	// Higher speeds need higher gravity
-	private float gravity = 18f;
+	private float gravity = 20f;
 	
 	/* VELOCITY */
 	// How much the velocity is scaled
@@ -41,6 +42,13 @@ public class PlayerController : MonoBehaviour {
 	private float momentumReductionFactor = 0.15f;
 	private float momentum;
 	private float slopeAngle;
+
+	private bool hasStarted = false;
+	private bool hasEnded = false;
+
+	private TimeManager timeManager;
+	private GameObject introPanel;
+	private Text introText;
 	
 	// Use this for initialization
 	void Start () {
@@ -49,13 +57,42 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-		float velocity = controlInterface.getMovementForward();
-		velocity = scaleVelocity(velocity);
-		move (velocity);
+		if (hasStarted && !hasEnded) {
+			float velocity = controlInterface.getMovementForward ();
+			velocity = scaleVelocity (velocity);
+			move (velocity);
 		
-		float rotation = controlInterface.getRotationHorizontal ();
-		rotation = scaleRotation (rotation);
-		rotateHorizontal (rotation);
+			float rotation = controlInterface.getRotationHorizontal ();
+			rotation = scaleRotation (rotation);
+			rotateHorizontal (rotation);
+
+			if(timeManager != null && timeManager.hasEnded()) {
+				endGame();
+			}
+
+		} else if (controlInterface.isSpacebarPressed () && !hasEnded) {
+			startGame();
+		}
+	}
+
+	private void startGame() {
+		hasStarted = true;
+		controlInterface.calibrate();
+
+		introPanel = GameObject.Find ("IntroPanel");
+		introPanel.SetActive (false);
+
+		introText = GameObject.Find ("IntroText").GetComponent<Text> ();
+		introText.text = "";
+
+		timeManager = GameObject.Find ("TimeText").GetComponent<TimeManager>();
+		timeManager.enable ();
+	}
+
+	private void endGame() {
+		hasEnded = true;
+		introPanel.SetActive (true);
+		introText.text = "Thank you for playing";
 	}
 	
 	private float scaleVelocity(float velocity) {
