@@ -5,18 +5,26 @@ using System.Collections;
 public class Collectable : MonoBehaviour {
 	
 	public Text counterText;
-	public int countSum;
-	public int coinValue=1;
+	private int countSum=0;
+	private int Apple=1;
+    public AudioClip CollectSound;
+    private AudioSource audioSource;
+
+    void Start() {
+        audioSource = GetComponent<AudioSource>();
+        audioSource.clip = CollectSound;
+    }
+
 	void Update(){
-		//transform.Rotate (new Vector3 (0, 40, 0) * Time.deltaTime);
 	}
 
 	void OnTriggerEnter(Collider col){
-		if (col.gameObject.CompareTag ("Coin")) {;
+		if (col.gameObject.CompareTag ("Apple")) {;
+            audioSource.Play();
 			//col.gameObject.SetActive(false);
 			Destroy (col.gameObject);
-			countSum +=coinValue;
-			counterText.text=countSum.ToString();
+			countSum +=Apple;
+			counterText.text=countSum.ToString()+ "/25";
 			//Destroy (this.gameObject);
 		}
 	}
