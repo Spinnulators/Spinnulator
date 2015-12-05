@@ -44,11 +44,11 @@ public class ControlInterface : MonoBehaviour {
 
     public bool isReverseRotationKeyPressed()
     {
-        return Input.GetKey(KeyCode.R);
+        return Input.GetKeyDown(KeyCode.R);
     }
 
     public bool isToggleKinectViewKeyPressed()
     {
-        return Input.GetKey(KeyCode.K);
+        return Input.GetKeyDown(KeyCode.K);
     }
 }
