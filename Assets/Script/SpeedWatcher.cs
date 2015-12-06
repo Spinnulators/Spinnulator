@@ -7,12 +7,12 @@ public class SpeedWatcher : MonoBehaviour {
 	public AudioSource audioSource;
 
 	private float momentumMaxTreshold = 40f;
-	private float momentumMinTreshold = 20f;
+	private float momentumMinTreshold = 25f;
 
 	private float momentumMiniTreshold = 10f;
-	private float momentumMiniVolume = 0.1f;
+	private float momentumMiniVolume = 0.08f;
 
-	private float volumeScale = 1.5f;
+	private float volumeScale = 2.0f;
 
 	void FixedUpdate () {
 
