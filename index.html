@@ -17,15 +17,24 @@
       <h2 class="project-tagline">Spinning simulator using Kinect</h2>
       <a href="https://github.com/Spinnulators/Spinnulator" class="btn">View on GitHub</a>
       <a href="https://github.com/Spinnulators/Spinnulator/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/Spinnulators/Spinnulator/tarball/master" class="btn">Download .tar.gz</a>
     </section>
 
     <section class="main-content">
+
       <h3><a id="spinnulator" class="anchor" href="#spinnulator" aria-hidden="true"><span class="octicon octicon-link"></span></a>About</h3>
 
       <p>Spinnulator is a simulator using cycling on a spinning bike. The positions and movements of the players body are tracked by a Microsoft Kinect and translated into a virtual environment. The player moves forward by cycling and their momentum will be retained just as in the real world, the player turns by tilting their whole body.</p>
 
+
+      <h3>Challenges and lessons learned</h3>
+
+      <p>We had no previous experience of using a Kinect, so we knew that developing this project would involve a lot of challenges. Integrating the Kinect and tracking the player was surprisingly easy, however with the tracking there were a lot of issues involved. First of all, the motion data would be very irregular without heavy interpolation, we also had issues with skeletons not being tracked for players wearing a lot of black clothing.</p>
+
+      <p>The project worked well for many types of players, and when simply adjusting the seat height and resistance of the bike the players would have no trouble playing the game. However, the Kinect had some lot of trouble tracking very young children. We learned that giving more control to the player of their experience yielded better results, however it was a challenge to continuously tweak the variables as we had to take in mind both individual preferences and physical differences of the players.</p>
+
+
       <h3>Images</h3>
+
       <div class="image-carousel">
         <div><img src="/Spinnulator/images/spinnulator2.jpg"></div>
         <div><img src="/Spinnulator/images/spinnulator3.jpg"></div>
@@ -33,6 +42,7 @@
         <div><img src="/Spinnulator/images/spinnulator5.jpg"></div>
         <div><img src="/Spinnulator/images/spinnulator6.jpg"></div>
       </div>
+
 
       <h3>Video</h3>
 
