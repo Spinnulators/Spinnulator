@@ -13,7 +13,7 @@ public class ControlInterface : MonoBehaviour {
 	}
 
 	public float getMovementForward() {
-		if (kinectInterface.skeletonIsFound()) {
+		if (kinectInterface.isTracking()) {
 			return kinectInterface.getAnkleVelocity();
 		} else {
             return keyboardInterface.getMovementForward();
@@ -21,7 +21,7 @@ public class ControlInterface : MonoBehaviour {
 	}
 
 	public float getRotationHorizontal() {
-		if (kinectInterface.skeletonIsFound()) {
+		if (kinectInterface.isTracking()) {
 			return kinectInterface.getHorizontalLean();
 		} else {
 			return keyboardInterface.getRotationHorizontal();

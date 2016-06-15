@@ -18,7 +18,7 @@ public class KinectInterface : MonoBehaviour {
 		ankleVelocityMotionData = new MotionData (motionDataSize);
     }
 
-    public bool skeletonIsFound() {
+    public bool isTracking() {
         return GameObject.Find("SpineBase") && GameObject.Find("SpineBase") && GameObject.Find("AnkleRight");
     }
 	
@@ -42,20 +42,35 @@ public class KinectInterface : MonoBehaviour {
         return GameObject.Find("HipRight").transform.position;
     }
 
+    private Vector3 getHandLeftPosition() {
+        return GameObject.Find("HandLeft").transform.position;
+    }
+
+    private Vector3 getHandRightPosition() {
+        return GameObject.Find("HandRight").transform.position;
+    }
+
+    private Vector3 getKneeLeftPosition() {
+        return GameObject.Find("KneeLeft").transform.position;
+    }
+
+    private Vector3 getKneeRightPosition()
+    {
+        return GameObject.Find("KneeRight").transform.position;
+    }
+
 	// Updates the ankle velocity every frame
 	private void updateAnkleVelocity() {
-		if (skeletonIsFound()) {
+		if (isTracking()) {
 			Vector3 footPosition = getAnkleRightPosition ();
 			
 			Vector3 distance = footPosition - prevFootPosition;
-            //Debug.Log("actual:" + footPosition + "old:" + prevFootPosition);
+
             float dist = distance.magnitude*6f;
-            //Debug.Log(dist);
-            if (dist < 24f)
-            {
+
+            if (dist < 24f) {
                 ankleVelocityMotionData.add(dist);
             }
-            
 			
 			prevFootPosition = footPosition;
 		}
@@ -70,19 +85,67 @@ public class KinectInterface : MonoBehaviour {
 
 	// Computes lean in x axis
 	public float getHorizontalLean () {
-		if (skeletonIsFound()) {
+        if (isTracking()) {
 
             Vector3 spineBase = getSpineBasePosition();
             Vector3 spineTop = getSpineTopPosition();
+            Vector3 spineVector = spineTop - spineBase;
 
-            float res = spineTop.x - spineBase.x;
-            Debug.Log(res);
+            Vector3 hipLeft = getHipLeftPosition();
+            Vector3 hipRight = getHipRightPosition();
 
-            return res;
-		}
+            Vector3 hipVector = hipRight - hipLeft;
+            hipVector.z = 0;
 
-		return 0f;
+            hipVector.Normalize();
+
+            float lean = Vector3.Dot(spineVector, hipVector);
+            Debug.Log(lean);
+
+            return lean;
+        } else {
+            return 0f;
+        }
 	}
+
+    // Returns whether the player can be assumed to have their hands on the handle
+    public bool playerHasHandsOnHandle() {
+
+        // Decides how far ahead the hand should be to the knee to be considered on the handle
+        float forwardMagnitudeCutoff = 0.8f;
+        
+        // The cumulative angle the knees should be at to be considered on the bike
+        float cumulativeKneeAngleCutoff = 40;
+
+        Vector3 spineTop = getSpineTopPosition();
+        Vector3 spineBase = getSpineBasePosition();
+
+        Vector3 hipLeft = getHipLeftPosition();
+        Vector3 kneeLeft = getKneeLeftPosition();
+        Vector3 handLeft = getHandLeftPosition();
+
+        Vector3 leftHandHipVector = handLeft - hipLeft;
+        Vector3 leftKneeHipVector = kneeLeft - hipLeft;
+
+        float leftHandForwardMagnitude = Vector3.Dot(leftHandHipVector, leftKneeHipVector);
+
+        Vector3 hipRight = getHipRightPosition();
+        Vector3 kneeRight = getKneeRightPosition();
+        Vector3 handRight = getHandRightPosition();
+
+        Vector3 rightHandHipVector = handRight - hipRight;
+        Vector3 rightKneeHipVector = kneeRight - hipRight;
+
+        float rightHandForwardMagnitude = Vector3.Dot(rightHandHipVector, rightKneeHipVector);
+
+        bool handsAreForward = (leftHandForwardMagnitude >= forwardMagnitudeCutoff)
+            && (rightHandForwardMagnitude >= forwardMagnitudeCutoff);
+
+        bool kneesAreAngled = Vector3.Angle(spineTop - spineBase, rightKneeHipVector) +
+            Vector3.Angle(spineTop - spineBase, rightKneeHipVector) > cumulativeKneeAngleCutoff;
+
+        return handsAreForward && kneesAreAngled;
+    }
 
     private Vector3 getPointOnLine(Vector3 lineStart, Vector3 lineEnd, Vector3 point) {
         Vector3 lineVector = lineEnd - lineStart;
