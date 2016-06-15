@@ -72,32 +72,24 @@ public class KinectInterface : MonoBehaviour {
 	public float getHorizontalLean () {
 		if (skeletonIsFound()) {
 
-            Vector3 hipLeft = getHipLeftPosition();
-            Vector3 hipRight = getHipRightPosition();
             Vector3 spineBase = getSpineBasePosition();
-
-            // Align spine base to be on hip line
-            Vector3 spineBaseAligned = getPointOnLine(hipLeft, hipRight, spineBase);
-            
             Vector3 spineTop = getSpineTopPosition();
 
-            // Align spine top to be on hip line
-            Vector3 spineTopAligned = getPointOnLine(hipLeft, hipRight, spineTop);
+            float res = spineTop.x - spineBase.x;
+            Debug.Log(res);
 
-            // Return difference between aligned spine base, and aligned spine top
-            Vector3 horizontalVector = spineTopAligned - spineBaseAligned;
-            return horizontalVector.magnitude;
+            return res;
 		}
 
 		return 0f;
 	}
 
     private Vector3 getPointOnLine(Vector3 lineStart, Vector3 lineEnd, Vector3 point) {
-        Vector3 line = lineEnd - lineStart;
-        Vector3 pointDiff = point - lineStart;
-        float pointPercentage = Vector3.Dot(pointDiff, line);
+        Vector3 lineVector = lineEnd - lineStart;
+        Vector3 pointDiffVector = point - lineStart;
+        float pointInLinePercentage = Vector3.Dot(pointDiffVector, lineVector);
 
-        Vector3 pointOnLine = lineStart + pointPercentage * lineEnd;
+        Vector3 pointOnLine = lineStart + pointInLinePercentage * lineEnd;
         return pointOnLine;
     }
 }

@@ -177,7 +177,7 @@ public class PlayerController : MonoBehaviour {
 			momentum = addVelocityToMomentum (momentum, velocity);
 		}
 		
-		print("Momentum: " + momentum + ", Velocity:" + velocity);
+		//print("Momentum: " + momentum + ", Velocity:" + velocity);
 		
 		Vector3 moveDirection = characterController.transform.forward * momentum * Time.deltaTime;
 		moveDirection.y -= gravity * Time.deltaTime;
