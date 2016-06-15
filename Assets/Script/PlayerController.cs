@@ -37,10 +37,10 @@ public class PlayerController : MonoBehaviour {
 	private float airborneRotationScale = 0.5f;
 	
 	// Minimum treshold, below this will equal zero
-	private float rotationDeadzone = 0.1f;
+	private float rotationDeadzone = 0.2f;
 	
 	// Max treshold, values above this will be reduced
-	private float rotationMaxTreshold = 2.0f;
+	private float rotationMaxTreshold = 2.6f;
 	
 	// How much momentum is reduced every frame
 	private float momentumReductionFactor = 0.135f;
@@ -72,7 +72,9 @@ public class PlayerController : MonoBehaviour {
 			
 			float rotation = controlInterface.getRotationHorizontal ();
 			rotation = scaleRotation (rotation);
-			rotateHorizontal (rotation);
+            if (rotation > rotationDeadzone || rotation < -rotationDeadzone) {
+                rotateHorizontal(rotation);
+            }
 			
 			if(timeManager != null && timeManager.hasEnded()) {
 				endGame();
@@ -89,16 +91,11 @@ public class PlayerController : MonoBehaviour {
 		if (controlInterface.isToggleKinectViewKeyPressed ()) {
 			toggleKinectView();
 		}
-		
-		if (controlInterface.isCalibrateKeyPressed ()) {
-			controlInterface.calibrate();
-		}
-		
+				
 	}
 	
 	private void startGame() {
 		hasStarted = true;
-		controlInterface.calibrate();
 		
 		introPanel = GameObject.Find ("IntroPanel");
 		introPanel.SetActive (false);
@@ -182,7 +179,7 @@ public class PlayerController : MonoBehaviour {
 			momentum = addVelocityToMomentum (momentum, velocity);
 		}
 		
-		print("Momentum: " + momentum + ", Velocity:" + velocity);
+		//print("Momentum: " + momentum + ", Velocity:" + velocity);
 		
 		Vector3 moveDirection = characterController.transform.forward * momentum * Time.deltaTime;
 		moveDirection.y -= gravity * Time.deltaTime;
