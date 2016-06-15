@@ -89,16 +89,11 @@ public class PlayerController : MonoBehaviour {
 		if (controlInterface.isToggleKinectViewKeyPressed ()) {
 			toggleKinectView();
 		}
-		
-		if (controlInterface.isCalibrateKeyPressed ()) {
-			controlInterface.calibrate();
-		}
-		
+				
 	}
 	
 	private void startGame() {
 		hasStarted = true;
-		controlInterface.calibrate();
 		
 		introPanel = GameObject.Find ("IntroPanel");
 		introPanel.SetActive (false);
