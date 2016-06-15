@@ -5,7 +5,7 @@ using System.Collections;
 public class Collectable : MonoBehaviour {
 	
 	public Text counterText;
-	private int countSum=0;
+	public int countSum=0;
 	private int Apple=1;
     public AudioClip CollectSound;
     private AudioSource audioSource;
@@ -21,10 +21,10 @@ public class Collectable : MonoBehaviour {
 	void OnTriggerEnter(Collider col){
 		if (col.gameObject.CompareTag ("Apple")) {;
             audioSource.Play();
-			//col.gameObject.SetActive(false);
-			Destroy (col.gameObject);
+			col.gameObject.SetActive(false);
+			//Destroy (col.gameObject);
 			countSum +=Apple;
-			counterText.text=countSum.ToString()+ "";
+			counterText.text=countSum.ToString();
 			//Destroy (this.gameObject);
 		}
 	}

@@ -47,12 +47,13 @@ public class PlayerController : MonoBehaviour {
 	public float momentum;
 	private float slopeAngle;
 	
-	private bool hasStarted = false;
-	private bool hasEnded = false;
+	public bool hasStarted = false;
+	public bool hasEnded = false;
 	
 	private TimeManager timeManager;
 	private GameObject introPanel;
 	private Text introText;
+    
 	
 	// Use this for initialization
 	void Start () {
@@ -101,7 +102,10 @@ public class PlayerController : MonoBehaviour {
 		controlInterface.calibrate();
 		
 		introPanel = GameObject.Find ("IntroPanel");
-		introPanel.SetActive (false);
+        if (introPanel.activeSelf)
+        {
+            introPanel.SetActive(false);
+        }
 		
 		introText = GameObject.Find ("IntroText").GetComponent<Text> ();
 		introText.text = "";

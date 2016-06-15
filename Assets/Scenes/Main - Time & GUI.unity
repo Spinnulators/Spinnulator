@@ -371,6 +371,8 @@ MonoBehaviour:
   characterController: {fileID: 68541331}
   bikeCamera: {fileID: 68290969}
   momentum: 0
+  hasStarted: 0
+  hasEnded: 0
 --- !u!143 &68541331
 CharacterController:
   m_ObjectHideFlags: 0
@@ -489,6 +491,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   counterText: {fileID: 766291173}
+  countSum: 0
   CollectSound: {fileID: 8300000, guid: 4887a7f536389a04183acb4ea557868b, type: 3}
 --- !u!82 &68541336
 AudioSource:
@@ -591,6 +594,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6586eb9bda6741144b6f80e76327f4c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 68541328}
+  playerController: {fileID: 68541330}
+  collectable: {fileID: 68541335}
+  timeManager: {fileID: 2060931742}
+  introPanel: {fileID: 461154276}
+  introText: {fileID: 297630177}
+  sensorView: {fileID: 194688391}
 --- !u!4 &163566312
 Transform:
   m_ObjectHideFlags: 0
@@ -1841,6 +1851,7 @@ Canvas:
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -2592,7 +2603,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   spreadCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -2614,7 +2625,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
 --- !u!114 &1037096834
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -12,6 +12,9 @@ public class TimeManager : MonoBehaviour {
 		startTime = Time.timeSinceLevelLoad;
 		enabled = true;
 	}
+    public void disable() {
+        enabled = false;
+    }
 
 	public bool hasEnded() {
 		float playTime = Time.timeSinceLevelLoad - startTime;
