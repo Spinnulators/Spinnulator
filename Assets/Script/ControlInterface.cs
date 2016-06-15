@@ -13,7 +13,7 @@ public class ControlInterface : MonoBehaviour {
 	}
 
 	public float getMovementForward() {
-		if (kinectInterface.isAnkleLeftFound ()) {
+		if (kinectInterface.isTracking()) {
 			return kinectInterface.getAnkleVelocity();
 		} else {
             return keyboardInterface.getMovementForward();
@@ -21,8 +21,8 @@ public class ControlInterface : MonoBehaviour {
 	}
 
 	public float getRotationHorizontal() {
-		if (kinectInterface.isShoulderLeftFound ()) {
-			return kinectInterface.getShoulderMovementHorizontal();
+		if (kinectInterface.isTracking()) {
+			return kinectInterface.getHorizontalLean();
 		} else {
 			return keyboardInterface.getRotationHorizontal();
 		}
@@ -31,12 +31,6 @@ public class ControlInterface : MonoBehaviour {
     public bool isCalibrateKeyPressed() {
         return (Input.GetKey(KeyCode.C) || Input.GetKey(KeyCode.Mouse1));
     }
-
-	public void calibrate() {
-		if (kinectInterface.isShoulderLeftFound ()) {
-			kinectInterface.calibrateShoulderPosition ();
-		}
-	}
 
 	public bool isStartKeyPressed() {
 		return (keyboardInterface.isSpacebarPressed () || Input.GetKey(KeyCode.Mouse0));
