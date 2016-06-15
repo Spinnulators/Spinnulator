@@ -24,7 +24,7 @@ public class Collectable : MonoBehaviour {
 			//col.gameObject.SetActive(false);
 			Destroy (col.gameObject);
 			countSum +=Apple;
-			counterText.text=countSum.ToString()+ " / 25";
+			counterText.text=countSum.ToString()+ "";
 			//Destroy (this.gameObject);
 		}
 	}
