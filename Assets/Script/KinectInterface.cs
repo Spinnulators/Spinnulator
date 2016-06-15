@@ -91,15 +91,16 @@ public class KinectInterface : MonoBehaviour {
             Vector3 spineTop = getSpineTopPosition();
             Vector3 spineVector = spineTop - spineBase;
 
-            Vector3 hipLeft = getHipLeftPosition();
             Vector3 hipRight = getHipRightPosition();
 
-            Vector3 hipVector = hipRight - hipLeft;
-            hipVector.z = 0;
+            Vector3 hipVector = hipRight - spineBase;
+            hipVector.y = 0;
 
             hipVector.Normalize();
 
             float lean = Vector3.Dot(spineVector, hipVector);
+
+            
             Debug.Log(lean);
 
             return lean;
