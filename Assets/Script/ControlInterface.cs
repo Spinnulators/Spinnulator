@@ -3,20 +3,13 @@ using System.Collections;
 
 public class ControlInterface : MonoBehaviour {
 
-	private KinectInterface kinectInterface;
-	private KeyboardInterface keyboardInterface;
-
-	// Use this for initialization
-	public ControlInterface () {
-		kinectInterface = new KinectInterface ();
-		keyboardInterface = new KeyboardInterface ();
-	}
+	public KinectInterface kinectInterface;
 
 	public float getMovementForward() {
 		if (kinectInterface.isTracking()) {
 			return kinectInterface.getAnkleVelocity();
 		} else {
-            return keyboardInterface.getMovementForward();
+            return getKeyboardMovementForward();
 		}
 	}
 
@@ -24,7 +17,7 @@ public class ControlInterface : MonoBehaviour {
 		if (kinectInterface.isTracking()) {
 			return kinectInterface.getHorizontalLean();
 		} else {
-			return keyboardInterface.getRotationHorizontal();
+			return getKeyboardRotationHorizontal();
 		}
 	}
 
@@ -33,7 +26,8 @@ public class ControlInterface : MonoBehaviour {
     }
 
 	public bool isStartKeyPressed() {
-		return (keyboardInterface.isSpacebarPressed () || Input.GetKey(KeyCode.Mouse0));
+		return (isSpacebarPressed ()
+            || Input.GetKey(KeyCode.Mouse0));
 	}
 
     public bool isReverseRotationKeyPressed()
@@ -44,5 +38,21 @@ public class ControlInterface : MonoBehaviour {
     public bool isToggleKinectViewKeyPressed()
     {
         return Input.GetKeyDown(KeyCode.K);
+    }
+
+    public float getKeyboardRotationHorizontal()
+    {
+        return Input.GetAxis("Horizontal");
+    }
+
+    public float getKeyboardMovementForward()
+    {
+        float forward = Input.GetAxis("Vertical");
+        return Mathf.Clamp01(forward);
+    }
+
+    public bool isSpacebarPressed()
+    {
+        return Input.GetKey(KeyCode.Space);
     }
 }

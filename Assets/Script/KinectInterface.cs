@@ -17,13 +17,16 @@ public class KinectInterface : MonoBehaviour {
 	private MotionData ankleVelocityMotionData;
     private Kinect.Body[] bodies;
 
-	private int motionDataSize = 20;
-
     // The maximum distance the player is allowed to be away from the bike
     private float playerDistanceCutoff = 5.0f;
+    private int motionDataSize = 20;
+
+    private int numTrackedPlayers;
+    private int numTrackedClosePlayers;
 
     void Start() {
         bikeSeat = GameObject.FindGameObjectWithTag("BikeSeat");
+        ankleVelocityMotionData = new MotionData(motionDataSize);
     }
 
     void FixedUpdate() {
@@ -50,10 +53,6 @@ public class KinectInterface : MonoBehaviour {
         updateClosestPlayer();
     }
 
-    public KinectInterface () {
-		ankleVelocityMotionData = new MotionData (motionDataSize);
-    }
-
     private Kinect.Body[] getBodies() {
         return bodies;
     }
@@ -75,6 +74,9 @@ public class KinectInterface : MonoBehaviour {
         float closestDistance = 999f;
         GameObject closestPlayerTemp = null;
 
+        int numTrackedPlayersTemp = 0;
+        int numTrackedClosePlayersTemp = 0;
+
         foreach(var body in getBodies()) {
             if (body.IsTracked){
                 GameObject bodyObject = GameObject.Find("Body:" + body.TrackingId);
@@ -82,13 +84,34 @@ public class KinectInterface : MonoBehaviour {
                 float distance = playerDistanceFromBike(bodyObject);
 
                 // Checks if this is the closest player, and if the player is close enough
-                if (distance < closestDistance && distance < playerDistanceCutoff) {
-                    closestPlayerTemp = bodyObject;
+                if (distance < playerDistanceCutoff) {
+
+                    numTrackedClosePlayersTemp++;
+
+                    if(distance < closestDistance) {
+                        numTrackedClosePlayersTemp++;
+                        closestPlayerTemp = bodyObject;
+                    }
                 }
             }
         }
 
         closestPlayer = closestPlayerTemp;
+
+        numTrackedClosePlayers = numTrackedClosePlayersTemp;
+        numTrackedPlayers = numTrackedPlayersTemp;
+    }
+
+    public int getNumTrackedPlayers() {
+        return numTrackedPlayers;
+    }
+
+    public int getNumTrackedClosePlayers() {
+        return numTrackedClosePlayers;
+    }
+
+    public bool tooManyClosePlayers() {
+        return (getNumTrackedClosePlayers() > 1 || getNumTrackedPlayers() > 4);
     }
 	
 	private Vector3 getAnkleRightPosition() {

@@ -5,11 +5,10 @@ using System.Collections;
 public class PlayerController : MonoBehaviour {
 	
 	public CharacterController characterController;
+    public ControlInterface controlInterface;
 	public Camera bikeCamera;
 	
 	private GameObject sensorView;
-	
-	private ControlInterface controlInterface;
 	
 	private bool reversed = false;
 	
@@ -57,7 +56,6 @@ public class PlayerController : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
-		controlInterface = new ControlInterface ();
 		if (GameObject.Find("SensorView"))
 		{
 			sensorView = GameObject.Find("SensorView");
