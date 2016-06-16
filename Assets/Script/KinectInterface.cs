@@ -8,8 +8,9 @@ public class KinectInterface : MonoBehaviour {
     public GameObject bodySourceGameObject;
     private BodySourceManager bodySourceManager;
 
-    private GameObject bikeSeat;
+    public GameObject bikeSeat;
     private GameObject closestPlayer;
+    private ulong closestPlayerId;
 
     private Vector3 prevFootPosition = new Vector3(0f, 0f, 0f);
 
@@ -18,14 +19,13 @@ public class KinectInterface : MonoBehaviour {
     private Kinect.Body[] bodies;
 
     // The maximum distance the player is allowed to be away from the bike
-    private float playerDistanceCutoff = 5.0f;
+    private float playerDistanceCutoff = 13.0f;
     private int motionDataSize = 20;
 
     private int numTrackedPlayers;
     private int numTrackedClosePlayers;
 
     void Start() {
-        bikeSeat = GameObject.FindGameObjectWithTag("BikeSeat");
         ankleVelocityMotionData = new MotionData(motionDataSize);
     }
 
@@ -65,7 +65,10 @@ public class KinectInterface : MonoBehaviour {
     private float playerDistanceFromBike(GameObject bodyObject) {
         GameObject spineBase = getChildGameObject(bodyObject, "SpineBase");
 
-        float distance = Vector3.Distance(spineBase.transform.position, bikeSeat.transform.position);
+        float distance = Vector3.Distance(spineBase.transform.position,
+            bikeSeat.transform.position);
+
+        Debug.Log(distance);
         return distance;
     }
 
@@ -73,6 +76,7 @@ public class KinectInterface : MonoBehaviour {
 
         float closestDistance = 999f;
         GameObject closestPlayerTemp = null;
+        ulong closestPlayerIdTemp = 0;
 
         int numTrackedPlayersTemp = 0;
         int numTrackedClosePlayersTemp = 0;
@@ -91,12 +95,14 @@ public class KinectInterface : MonoBehaviour {
                     if(distance < closestDistance) {
                         numTrackedClosePlayersTemp++;
                         closestPlayerTemp = bodyObject;
+                        closestPlayerIdTemp = body.TrackingId;
                     }
                 }
             }
         }
 
         closestPlayer = closestPlayerTemp;
+        closestPlayerId = closestPlayerIdTemp;
 
         numTrackedClosePlayers = numTrackedClosePlayersTemp;
         numTrackedPlayers = numTrackedPlayersTemp;
@@ -111,7 +117,7 @@ public class KinectInterface : MonoBehaviour {
     }
 
     public bool tooManyClosePlayers() {
-        return (getNumTrackedClosePlayers() > 1 || getNumTrackedPlayers() > 4);
+        return (getNumTrackedClosePlayers() > 2 || getNumTrackedPlayers() > 4);
     }
 	
 	private Vector3 getAnkleRightPosition() {
@@ -132,22 +138,6 @@ public class KinectInterface : MonoBehaviour {
 
     private Vector3 getHipRightPosition() {
         return getChildGameObject(closestPlayer, "HipRight").transform.position;
-    }
-
-    private Vector3 getHandLeftPosition() {
-        return getChildGameObject(closestPlayer, "HandLeft").transform.position;
-    }
-
-    private Vector3 getHandRightPosition() {
-        return getChildGameObject(closestPlayer, "HandRight").transform.position;
-    }
-
-    private Vector3 getKneeLeftPosition() {
-        return getChildGameObject(closestPlayer, "KneeLeft").transform.position;
-    }
-
-    private Vector3 getKneeRightPosition() {
-        return getChildGameObject(closestPlayer, "KneeRight").transform.position;
     }
 
 	// Updates the ankle velocity every frame
@@ -192,7 +182,7 @@ public class KinectInterface : MonoBehaviour {
             float lean = Vector3.Dot(spineVector, hipVector);
 
             
-            Debug.Log(lean);
+            //Debug.Log(lean);
 
             return lean;
         } else {

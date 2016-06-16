@@ -36,10 +36,10 @@ public class PlayerController : MonoBehaviour {
 	private float airborneRotationScale = 0.5f;
 	
 	// Minimum treshold, below this will equal zero
-	private float rotationDeadzone = 0.2f;
+	private float rotationDeadzone = 0.1f;
 	
 	// Max treshold, values above this will be reduced
-	private float rotationMaxTreshold = 2.6f;
+	private float rotationMaxTreshold = 3.0f;
 	
 	// How much momentum is reduced every frame
 	private float momentumReductionFactor = 0.135f;

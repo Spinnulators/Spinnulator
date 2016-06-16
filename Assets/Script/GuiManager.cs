@@ -9,18 +9,25 @@ public class GuiManager : MonoBehaviour {
     public GameObject biker;
 
     void FixedUpdate() {
-        if (kinectInterface.tooManyClosePlayers())
-        {
+        if (kinectInterface.tooManyClosePlayers()) {
             warningText.text = "För många spelare i spelområdet";
-            warningPanel.SetActive(true);
+
+            if (!warningPanel.activeSelf) {
+                warningPanel.SetActive(true);
+            }
         } else {
             warningText.text = "";
-            warningPanel.SetActive(false);
+
+            if (warningPanel.activeSelf) {
+                warningPanel.SetActive(false);
+            }
         }
 
         if (kinectInterface.isTracking()) {
-            biker.SetActive(false);
-        } else {
+            if (biker.activeSelf) {
+                biker.SetActive(false);
+            }
+        } else if(!biker.activeSelf) {
             biker.SetActive(true);
         }
     }
