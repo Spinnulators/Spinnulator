@@ -1,62 +1,130 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Kinect = Windows.Kinect;
+using System.Collections.Generic;
 
 public class KinectInterface : MonoBehaviour {
 
-    private bool centered = false;
-    
-	private Vector3 shoulderInitPosition;
+    public GameObject bodySourceGameObject;
+    private BodySourceManager bodySourceManager;
+
+    private GameObject bikeSeat;
+    private GameObject closestPlayer;
+
     private Vector3 prevFootPosition = new Vector3(0f, 0f, 0f);
 
 	private KeyboardInterface keyboardController;
 	private MotionData ankleVelocityMotionData;
+    private Kinect.Body[] bodies;
 
 	private int motionDataSize = 20;
 
+    // The maximum distance the player is allowed to be away from the bike
+    private float playerDistanceCutoff = 5.0f;
+
+    void Start() {
+        bikeSeat = GameObject.FindGameObjectWithTag("BikeSeat");
+    }
+
+    void FixedUpdate() {
+
+        bodySourceGameObject = GameObject.Find("BodyManager");
+
+        if (bodySourceGameObject == null) {
+            Debug.Log("Couldn't find body manager object");
+            return;
+        }
+
+        bodySourceManager = bodySourceGameObject.GetComponent<BodySourceManager>();
+        if (bodySourceManager == null) {
+            Debug.Log("Couldn't find BodySourceManager");
+            return;
+        }
+
+        bodies = bodySourceManager.GetData();
+        
+        if (bodies == null) {
+            return;
+        }
+
+        updateClosestPlayer();
+    }
 
     public KinectInterface () {
 		ankleVelocityMotionData = new MotionData (motionDataSize);
     }
 
+    private Kinect.Body[] getBodies() {
+        return bodies;
+    }
+
     public bool isTracking() {
-        return GameObject.Find("SpineBase") && GameObject.Find("SpineBase") && GameObject.Find("AnkleRight");
+        return (closestPlayer != null && getChildGameObject(closestPlayer, "SpineBase") != null && 
+            playerDistanceFromBike(closestPlayer) < playerDistanceCutoff);
+    }
+
+    private float playerDistanceFromBike(GameObject bodyObject) {
+        GameObject spineBase = getChildGameObject(bodyObject, "SpineBase");
+
+        float distance = Vector3.Distance(spineBase.transform.position, bikeSeat.transform.position);
+        return distance;
+    }
+
+    private void updateClosestPlayer() {
+
+        float closestDistance = 999f;
+        GameObject closestPlayerTemp = null;
+
+        foreach(var body in getBodies()) {
+            if (body.IsTracked){
+                GameObject bodyObject = GameObject.Find("Body:" + body.TrackingId);
+
+                float distance = playerDistanceFromBike(bodyObject);
+
+                // Checks if this is the closest player, and if the player is close enough
+                if (distance < closestDistance && distance < playerDistanceCutoff) {
+                    closestPlayerTemp = bodyObject;
+                }
+            }
+        }
+
+        closestPlayer = closestPlayerTemp;
     }
 	
 	private Vector3 getAnkleRightPosition() {
-		return GameObject.Find ("AnkleRight").transform.position;
+        return getChildGameObject(closestPlayer, "AnkleRight").transform.position;
 	}
 	
 	private Vector3 getSpineTopPosition() {
-		return GameObject.Find ("SpineShoulder").transform.position;
+		return getChildGameObject(closestPlayer, "SpineShoulder").transform.position;
 	}
 
     private Vector3 getSpineBasePosition() {
-        return GameObject.Find("SpineBase").transform.position;
+        return getChildGameObject(closestPlayer, "SpineBase").transform.position;
     }
 
     private Vector3 getHipLeftPosition() {
-        return GameObject.Find("HipLeft").transform.position;
+        return getChildGameObject(closestPlayer, "HipLeft").transform.position;
     }
 
     private Vector3 getHipRightPosition() {
-        return GameObject.Find("HipRight").transform.position;
+        return getChildGameObject(closestPlayer, "HipRight").transform.position;
     }
 
     private Vector3 getHandLeftPosition() {
-        return GameObject.Find("HandLeft").transform.position;
+        return getChildGameObject(closestPlayer, "HandLeft").transform.position;
     }
 
     private Vector3 getHandRightPosition() {
-        return GameObject.Find("HandRight").transform.position;
+        return getChildGameObject(closestPlayer, "HandRight").transform.position;
     }
 
     private Vector3 getKneeLeftPosition() {
-        return GameObject.Find("KneeLeft").transform.position;
+        return getChildGameObject(closestPlayer, "KneeLeft").transform.position;
     }
 
-    private Vector3 getKneeRightPosition()
-    {
-        return GameObject.Find("KneeRight").transform.position;
+    private Vector3 getKneeRightPosition() {
+        return getChildGameObject(closestPlayer, "KneeRight").transform.position;
     }
 
 	// Updates the ankle velocity every frame
@@ -109,51 +177,16 @@ public class KinectInterface : MonoBehaviour {
         }
 	}
 
-    // Returns whether the player can be assumed to have their hands on the handle
-    public bool playerHasHandsOnHandle() {
+    private GameObject getChildGameObject(GameObject fromGameObject, string withName) {
 
-        // Decides how far ahead the hand should be to the knee to be considered on the handle
-        float forwardMagnitudeCutoff = 0.8f;
+        Transform[] ts = fromGameObject.transform.GetComponentsInChildren<Transform>();
         
-        // The cumulative angle the knees should be at to be considered on the bike
-        float cumulativeKneeAngleCutoff = 40;
+        foreach (Transform t in ts) {
+            if (t.gameObject.name == withName) {
+                return t.gameObject;
+            }
+        }
 
-        Vector3 spineTop = getSpineTopPosition();
-        Vector3 spineBase = getSpineBasePosition();
-
-        Vector3 hipLeft = getHipLeftPosition();
-        Vector3 kneeLeft = getKneeLeftPosition();
-        Vector3 handLeft = getHandLeftPosition();
-
-        Vector3 leftHandHipVector = handLeft - hipLeft;
-        Vector3 leftKneeHipVector = kneeLeft - hipLeft;
-
-        float leftHandForwardMagnitude = Vector3.Dot(leftHandHipVector, leftKneeHipVector);
-
-        Vector3 hipRight = getHipRightPosition();
-        Vector3 kneeRight = getKneeRightPosition();
-        Vector3 handRight = getHandRightPosition();
-
-        Vector3 rightHandHipVector = handRight - hipRight;
-        Vector3 rightKneeHipVector = kneeRight - hipRight;
-
-        float rightHandForwardMagnitude = Vector3.Dot(rightHandHipVector, rightKneeHipVector);
-
-        bool handsAreForward = (leftHandForwardMagnitude >= forwardMagnitudeCutoff)
-            && (rightHandForwardMagnitude >= forwardMagnitudeCutoff);
-
-        bool kneesAreAngled = Vector3.Angle(spineTop - spineBase, rightKneeHipVector) +
-            Vector3.Angle(spineTop - spineBase, rightKneeHipVector) > cumulativeKneeAngleCutoff;
-
-        return handsAreForward && kneesAreAngled;
-    }
-
-    private Vector3 getPointOnLine(Vector3 lineStart, Vector3 lineEnd, Vector3 point) {
-        Vector3 lineVector = lineEnd - lineStart;
-        Vector3 pointDiffVector = point - lineStart;
-        float pointInLinePercentage = Vector3.Dot(pointDiffVector, lineVector);
-
-        Vector3 pointOnLine = lineStart + pointInLinePercentage * lineEnd;
-        return pointOnLine;
+        return null;
     }
 }
