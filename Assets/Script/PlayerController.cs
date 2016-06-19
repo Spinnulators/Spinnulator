@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour {
 	
 	/* ROTATION */
 	// How much the rotation is scaled
-	private float rotationScaleFactor = 0.8f;
+	private float rotationScaleFactor = 1.0f;
 	
 	// How much the rotation is scaled by the velocity
 	private float rotationVelocityScaleFactor = 0.6f;
@@ -39,7 +39,7 @@ public class PlayerController : MonoBehaviour {
 	private float rotationDeadzone = 0.1f;
 	
 	// Max treshold, values above this will be reduced
-	private float rotationMaxTreshold = 3.0f;
+	private float rotationMaxTreshold = 3.5f;
 	
 	// How much momentum is reduced every frame
 	private float momentumReductionFactor = 0.135f;
@@ -71,11 +71,14 @@ public class PlayerController : MonoBehaviour {
 			
 			float rotation = controlInterface.getRotationHorizontal ();
 			rotation = scaleRotation (rotation);
-            if (rotation > rotationDeadzone || rotation < -rotationDeadzone) {
-                rotateHorizontal(rotation);
+
+            if (rotation > rotationDeadzone) {
+                rotateHorizontal(rotation - rotationDeadzone);
+            } else if (rotation < -rotationDeadzone) {
+                rotateHorizontal(rotation + rotationDeadzone);
             }
-			
-			if(timeManager != null && timeManager.hasEnded()) {
+
+            if (timeManager != null && timeManager.hasEnded()) {
 				endGame();
 			}
 			
@@ -151,8 +154,8 @@ public class PlayerController : MonoBehaviour {
 		if (rotation < -rotationMaxTreshold) {
 			rotation = -rotationMaxTreshold;
 		}
-		if (reversed)
-		{
+
+        if (reversed) {
 			rotation = -rotation;
 		}
 		// At 0 rVSF this equals 1, at 1 rVSF this equals the movement forward

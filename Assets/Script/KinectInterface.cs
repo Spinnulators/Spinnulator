@@ -7,6 +7,7 @@ public class KinectInterface : MonoBehaviour {
 
     public GameObject bodySourceGameObject;
     private BodySourceManager bodySourceManager;
+    private Dictionary<ulong, GameObject> bodyIdToBodyObjectMap = new Dictionary<ulong, GameObject>();
 
     public GameObject bikeSeat;
     private GameObject closestPlayer;
@@ -19,7 +20,7 @@ public class KinectInterface : MonoBehaviour {
     private Kinect.Body[] bodies;
 
     // The maximum distance the player is allowed to be away from the bike
-    private float playerDistanceCutoff = 13.0f;
+    private float playerDistanceCutoff = 9.0f;
     private int motionDataSize = 20;
 
     private int numTrackedPlayers;
@@ -68,7 +69,7 @@ public class KinectInterface : MonoBehaviour {
         float distance = Vector3.Distance(spineBase.transform.position,
             bikeSeat.transform.position);
 
-        Debug.Log(distance);
+        //Debug.Log(distance);
         return distance;
     }
 
@@ -83,7 +84,15 @@ public class KinectInterface : MonoBehaviour {
 
         foreach(var body in getBodies()) {
             if (body.IsTracked){
-                GameObject bodyObject = GameObject.Find("Body:" + body.TrackingId);
+
+                GameObject bodyObject;
+
+                if (!bodyIdToBodyObjectMap.ContainsKey(body.TrackingId)) {
+                    bodyObject = GameObject.Find("Body:" + body.TrackingId);
+                    bodyIdToBodyObjectMap.Add(body.TrackingId, bodyObject);
+                }
+
+                bodyIdToBodyObjectMap.TryGetValue(body.TrackingId, out bodyObject);
 
                 float distance = playerDistanceFromBike(bodyObject);
 
@@ -168,27 +177,33 @@ public class KinectInterface : MonoBehaviour {
 	public float getHorizontalLean () {
         if (isTracking()) {
 
-            Vector3 spineBase = getSpineBasePosition();
-            Vector3 spineTop = getSpineTopPosition();
-            Vector3 spineVector = spineTop - spineBase;
-
-            Vector3 hipRight = getHipRightPosition();
-
-            Vector3 hipVector = hipRight - spineBase;
+            Vector3 spineVector = getSpineTopPosition() - getSpineBasePosition();
+            Vector3 hipVector = getHipRightPosition() - getHipLeftPosition();
             hipVector.y = 0;
 
             hipVector.Normalize();
 
             float lean = Vector3.Dot(spineVector, hipVector);
 
-            
-            //Debug.Log(lean);
-
             return lean;
         } else {
             return 0f;
         }
 	}
+
+    // Simple horizontal lean
+    public float getHorizontalLeanAlt() {
+        if (isTracking()) {
+
+            foreach (var body in bodies) {
+                if (body.TrackingId == closestPlayerId) {
+                    return body.Lean.X * 1.5f;
+                }
+            }
+        }
+
+        return 0f;
+    }
 
     private GameObject getChildGameObject(GameObject fromGameObject, string withName) {
 

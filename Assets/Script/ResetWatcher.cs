@@ -29,7 +29,7 @@ public class ResetWatcher : MonoBehaviour {
             
             timeManager.disable();
             
-            GameObject.Find("TimeText").GetComponent<Text>().text = "02" + " : " + "30";
+            GameObject.Find("TimeText").GetComponent<Text>().text = "02" + " : " + "00";
             collectable.counterText.text = collectable.countSum.ToString();
             
             if (!sensorView.activeSelf) {

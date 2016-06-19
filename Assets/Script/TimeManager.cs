@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class TimeManager : MonoBehaviour {
 
-	private float maxPlayTime = 2.5f * 60f; // Minutes x seconds
+	private float maxPlayTime = 2.0f * 60f; // Minutes x seconds
 	private float startTime;
 	private bool enabled = false;
 
