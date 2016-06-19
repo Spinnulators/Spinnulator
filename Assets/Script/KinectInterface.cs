@@ -12,6 +12,7 @@ public class KinectInterface : MonoBehaviour {
     public GameObject bikeSeat;
     private GameObject closestPlayer;
     private ulong closestPlayerId;
+    private float timePlayerStartedOnBike;
 
     private Vector3 prevFootPosition = new Vector3(0f, 0f, 0f);
 
@@ -52,6 +53,11 @@ public class KinectInterface : MonoBehaviour {
         }
 
         updateClosestPlayer();
+    }
+
+    void resetTime() {
+        // Resets the time on bike, so it doesn't grow too large
+        timePlayerStartedOnBike = Time.time;
     }
 
     private Kinect.Body[] getBodies() {
@@ -110,11 +116,20 @@ public class KinectInterface : MonoBehaviour {
             }
         }
 
+        if (closestPlayerTemp != closestPlayer) {
+            timePlayerStartedOnBike = Time.time;
+        }
+
         closestPlayer = closestPlayerTemp;
         closestPlayerId = closestPlayerIdTemp;
 
         numTrackedClosePlayers = numTrackedClosePlayersTemp;
         numTrackedPlayers = numTrackedPlayersTemp;
+    }
+
+    // When player got on the bike
+    public float getTimePlayerStartedOnBike() {
+        return timePlayerStartedOnBike;
     }
 
     public int getNumTrackedPlayers() {

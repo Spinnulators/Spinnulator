@@ -3,10 +3,12 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class PlayerController : MonoBehaviour {
-	
+
+    public GameManager gameManager;
 	public CharacterController characterController;
     public ControlInterface controlInterface;
 	public Camera bikeCamera;
+    public GuiManager guiManager;
 	
 	private GameObject sensorView;
 	
@@ -46,25 +48,16 @@ public class PlayerController : MonoBehaviour {
 	public float momentum;
 	private float slopeAngle;
 	
-	public bool hasStarted = false;
-	public bool hasEnded = false;
-	
-	private TimeManager timeManager;
-	private GameObject introPanel;
-	private Text introText;
-    
-	
 	// Use this for initialization
 	void Start () {
-		if (GameObject.Find("SensorView"))
-		{
+		if (GameObject.Find("SensorView")) {
 			sensorView = GameObject.Find("SensorView");
 		}
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-		if (hasStarted && !hasEnded) {
+		if (gameManager.gameHasStarted() && !gameManager.gameHasEnded()) {
 			float velocity = controlInterface.getMovementForward ();
 			velocity = scaleVelocity (velocity);
 			move (velocity);
@@ -77,13 +70,9 @@ public class PlayerController : MonoBehaviour {
             } else if (rotation < -rotationDeadzone) {
                 rotateHorizontal(rotation + rotationDeadzone);
             }
-
-            if (timeManager != null && timeManager.hasEnded()) {
-				endGame();
-			}
 			
-		} else if (controlInterface.isStartKeyPressed () && !hasEnded) {
-			startGame();
+		} else if (controlInterface.isStartKeyPressed () && !gameManager.gameHasEnded()) {
+            gameManager.startGame();
 		}
 		
 		if (controlInterface.isReverseRotationKeyPressed ()) {
@@ -95,33 +84,7 @@ public class PlayerController : MonoBehaviour {
 		}
 				
 	}
-	
-	private void startGame() {
-		hasStarted = true;
 		
-		introPanel = GameObject.Find ("IntroPanel");
-        if (introPanel.activeSelf)
-        {
-            introPanel.SetActive(false);
-        }
-		
-		introText = GameObject.Find ("IntroText").GetComponent<Text> ();
-		introText.text = "";
-		
-		timeManager = GameObject.Find ("TimeText").GetComponent<TimeManager>();
-		timeManager.enable ();
-		if (sensorView.activeSelf)
-		{
-			sensorView.SetActive(false);
-		}
-	}
-	
-	private void endGame() {
-		hasEnded = true;
-		introPanel.SetActive (true);
-		introText.text = "Thank you for playing";
-	}
-	
 	private void toggleKinectView() {
 		if (sensorView.activeSelf) {
 			sensorView.SetActive(false);
