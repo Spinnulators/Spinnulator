@@ -5,12 +5,14 @@ using System.Collections;
 public class GuiManager : MonoBehaviour {
 
     public KinectInterface kinectInterface;
-    private TimeManager timeManager;
     private GameObject sensorView;
+	public GameObject biker;
+	public GameManager gameManager;
 
-    public GameObject biker;
-    public GameObject introPanel;
+	public GameObject introPanel;
     public Text introText;
+	public GameObject helpPanel;
+	public Text helpText;
     public GameObject warningPanel;
     public Text warningText;
 
@@ -21,11 +23,17 @@ public class GuiManager : MonoBehaviour {
     }
 
     void FixedUpdate() {
-        showWarning(kinectInterface.tooManyClosePlayers());
-        showTrackingStatus(kinectInterface.isTracking());
+        showTooManyPlayersWarning(kinectInterface.tooManyClosePlayers());
+
+		if (gameManager.gameHasStarted() && !gameManager.gameHasEnded ()) {
+			showTrackingStatus (kinectInterface.isTracking());
+		}
     }
 
-    private void showWarning(bool show) {
+	/**
+	 * Shows a warning if there are too many players
+	 */
+    private void showTooManyPlayersWarning(bool show) {
         if (show) {
             warningText.text = Strings.warning;
 
@@ -41,34 +49,32 @@ public class GuiManager : MonoBehaviour {
             }
         }
     }
-
-    // TODO knas med denna funktion, då den är under både start och paus med olika funktion
+	
     private void showTrackingStatus(bool tracking){
         if (tracking) {
             if (biker.activeSelf) {
                 biker.SetActive(false);
             }
 
-            if (introPanel.activeSelf) {
-                introPanel.SetActive(false);
+            if (helpPanel.activeSelf) {
+                helpPanel.SetActive(false);
             }
 
-            //introText.text = "";
-
+            helpText.text = "";
         }
         else {
             if (!biker.activeSelf) {
                 biker.SetActive(true);
             }
 
-            if (!introPanel.activeSelf) {
-                introPanel.SetActive(true); 
+            if (!helpPanel.activeSelf) {
+                helpPanel.SetActive(true); 
             }
 
-            //introText.text = Strings.intro;
+            helpText.text = Strings.help;
         }
     }
-
+	
     public void startGame() {
 
         if (introPanel.activeSelf) {
@@ -77,33 +83,39 @@ public class GuiManager : MonoBehaviour {
 
         introText.text = "";
 
-        timeManager = GameObject.Find("TimeText").GetComponent<TimeManager>();
-        timeManager.enable();
-
         if (sensorView.activeSelf)
         {
             sensorView.SetActive(false);
         }
     }
 
+	/** 
+	 * Resets and initializes the GUI
+	 */
     public void resetGame() {
-        GameObject.Find("TimeText").GetComponent<Text>().text = Strings.time;
 
         if (!sensorView.activeSelf) {
             sensorView.SetActive(true);
         }
 
         if (!introPanel.activeSelf) {
-            introPanel.SetActive(true);
-            //introText.SetActive(true);    
+            introPanel.SetActive(true); 
         }
 
         introText.text = Strings.intro;
+
+		helpPanel.SetActive(false);
+		helpText.text = "";
+		biker.SetActive(false);
     }
 
     public void endGame() {
         introPanel.SetActive(true);
         introText.text = Strings.end;
+
+		biker.SetActive (false);
+		helpPanel.SetActive(false);
+		helpText.text = "";
     }
 
     public void showStartCountdown(int time) {

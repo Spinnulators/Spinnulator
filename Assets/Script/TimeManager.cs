@@ -8,29 +8,36 @@ public class TimeManager : MonoBehaviour {
 	private float startTime;
 	private bool enabled = false;
 
-	public void enable() {
-		startTime = Time.timeSinceLevelLoad;
+	public void start() {
+		startTime = Time.time;
 		enabled = true;
 	}
-    public void disable() {
+    public void end() {
         enabled = false;
     }
 
-	public bool hasEnded() {
-		float playTime = Time.timeSinceLevelLoad - startTime;
-		return playTime >= maxPlayTime;
+	public bool isEnabled() {
+		return enabled;
 	}
 
-	void OnGUI () {
-		if (!enabled) {
-			return;
+	private float getCurrentPlaytime() {
+
+		if (enabled) {
+			return Time.timeSinceLevelLoad - startTime;
 		}
 
-		float playTime = Time.timeSinceLevelLoad - startTime;
-		playTime = Mathf.Clamp (playTime, 0, maxPlayTime);
+		return 0f;
+	}
+
+	public bool hasEnded() {
+		return getCurrentPlaytime() >= maxPlayTime;
+	}
+
+	public void updateGUI(float currentPlaytime) {
+		currentPlaytime = Mathf.Clamp (currentPlaytime, 0, maxPlayTime);
 		
-		int minutes = ((int) (maxPlayTime - playTime)) / 60;
-		int seconds = ((int) (maxPlayTime - playTime)) % 60;
+		int minutes = ((int) (maxPlayTime - currentPlaytime)) / 60;
+		int seconds = ((int) (maxPlayTime - currentPlaytime)) % 60;
 		
 		string minStr = minutes.ToString();
 		string secStr = seconds.ToString();
@@ -44,5 +51,14 @@ public class TimeManager : MonoBehaviour {
 		}
 		
 		GameObject.Find ("TimeText").GetComponent<Text>().text = minStr + " : " + secStr;
+	}
+
+	void OnGUI () {
+
+		if (enabled) {
+			updateGUI (getCurrentPlaytime());
+		} else {
+			updateGUI (0f);
+		}
 	}
 }

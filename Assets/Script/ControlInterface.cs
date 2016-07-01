@@ -20,14 +20,14 @@ public class ControlInterface : MonoBehaviour {
 			return getKeyboardRotationHorizontal();
 		}
 	}
-
-    public bool isCalibrateKeyPressed() {
-        return (Input.GetKey(KeyCode.C) || Input.GetKey(KeyCode.Mouse1));
-    }
-
+	
 	public bool isStartKeyPressed() {
 		return (isSpacebarPressed ()
             || Input.GetKey(KeyCode.Mouse0));
+	}
+
+	public bool isResetKeyPressed() {
+		return Input.GetKey (KeyCode.Escape) || Input.GetKey (KeyCode.Mouse1);
 	}
 
     public bool isReverseRotationKeyPressed()
@@ -55,4 +55,8 @@ public class ControlInterface : MonoBehaviour {
     {
         return Input.GetKey(KeyCode.Space);
     }
+
+	public bool isKinectTracking() {
+		return kinectInterface.isTracking();
+	}
 }

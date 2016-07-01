@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour {
     public GameObject sensorView;
     public GuiManager guiManager;
     public KinectInterface kinectInterface;
+	public ControlInterface controlInterface;
 
     private bool hasStarted;
     private bool hasEnded;
@@ -26,32 +27,30 @@ public class GameManager : MonoBehaviour {
     void Start() {
         apples = GameObject.FindGameObjectsWithTag("Apple");
         introText.text = Strings.intro;
-        GameObject.Find("TimeText").GetComponent<Text>().text = Strings.time;
 
         startPosition = player.transform.position;
         startRotation = player.transform.rotation;
+
+		guiManager.resetGame();
     }
 
 	// Update is called once per frame
 	void FixedUpdate () {
-		if (Input.GetKey (KeyCode.Escape) || Input.GetKey(KeyCode.Mouse2)) {
+
+		if (controlInterface.isStartKeyPressed () && !gameHasStarted() && !gameHasEnded()) {
+			startGame();
+		}
+
+		if (controlInterface.isResetKeyPressed()) {
             resetGame();
 		}
 
-        if (timeManager != null && timeManager.hasEnded() && !gameHasEnded()) {
+        if (timeManager.isEnabled() && timeManager.hasEnded() && !gameHasEnded()) {
             endGame();
         }
 
-        if (!gameHasStarted()) {
-            playerOnBikeStartCountdown();
-        }
-
-        if (hasEnded) {
-            int timeSinceEnd = (int) (Time.time - endTime);
-
-            if (timeSinceEnd > 5) {
-                resetGame();
-            }
+        if (gameHasEnded()) {
+			endGameCountdown();
         }
     }
 
@@ -61,7 +60,7 @@ public class GameManager : MonoBehaviour {
         playerController.momentum = 0;
         collectable.countSum = 0;
 
-        timeManager.disable();
+        timeManager.end();
 
         guiManager.resetGame();
 
@@ -75,8 +74,16 @@ public class GameManager : MonoBehaviour {
                 apple.SetActive(true);
             }
         }
+
+		Debug.Log ("Game reset");
     }
 
+	/**
+	 * If the kinect is tracking the player, have a small countdown
+	 * and automatically start the game afterwards.
+	 * 
+	 * NOT USED ATM
+	 */
     private void playerOnBikeStartCountdown() {
         int countdownLimit = 5;
         int timeDifference = (int) (Time.time - kinectInterface.getTimePlayerStartedOnBike());
@@ -92,8 +99,21 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+	/**
+	 * Reset the game after a countdown 
+	 */
+	private void endGameCountdown() {
+		int timeSinceEnd = (int) (Time.time - endTime);
+		int countdownLimit = 5;
+		
+		if (timeSinceEnd > countdownLimit) {
+			resetGame();
+		}
+	}
+
     public void startGame() {
         hasStarted = true;
+		timeManager.start();
         guiManager.startGame();
     }
 

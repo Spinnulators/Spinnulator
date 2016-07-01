@@ -71,8 +71,6 @@ public class PlayerController : MonoBehaviour {
                 rotateHorizontal(rotation + rotationDeadzone);
             }
 			
-		} else if (controlInterface.isStartKeyPressed () && !gameManager.gameHasEnded()) {
-            gameManager.startGame();
 		}
 		
 		if (controlInterface.isReverseRotationKeyPressed ()) {
