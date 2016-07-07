@@ -145,7 +145,7 @@ public class KinectInterface : MonoBehaviour {
     }
 	
 	private Vector3 getAnkleRightPosition() {
-        return getChildGameObject(closestPlayer, "AnkleRight").transform.position;
+        return getChildGameObject(closestPlayer, "AnkleLeft").transform.position;
 	}
 	
 	private Vector3 getSpineTopPosition() {
