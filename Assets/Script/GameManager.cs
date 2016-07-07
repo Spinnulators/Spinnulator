@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour {
     private float endTime;
 
     void Start() {
+        Cursor.visible = false;
         apples = GameObject.FindGameObjectsWithTag("Apple");
         introText.text = Strings.intro;
 
