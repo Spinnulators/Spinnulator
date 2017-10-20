@@ -22,6 +22,8 @@ public class GameManager : MonoBehaviour {
     private Vector3 startPosition;
     private Quaternion startRotation;
 
+	private float startTime;
+	private float resetTime;
     private float endTime;
 
     void Start() {
@@ -39,9 +41,21 @@ public class GameManager : MonoBehaviour {
 	void FixedUpdate () {
 
 		if (controlInterface.isStartKeyPressed () && !gameHasStarted() && !gameHasEnded()) {
-			startGame();
+			int timeSinceRestartClick = (int)(Time.time - resetTime);
+			int restartCountdownLimit = 1;
+			if (timeSinceRestartClick > restartCountdownLimit) {
+				startTime = Time.time;
+				startGame ();
+			}
 		}
-
+		else if (controlInterface.isStartKeyPressed () && gameHasStarted () && !gameHasEnded ()) {
+			int timeSinceStartClick = (int) (Time.time - startTime);
+			int startCountdownLimit = 1;
+			if (timeSinceStartClick > startCountdownLimit) {
+				resetTime=Time.time;
+				resetGame();
+			}
+		}
 		if (controlInterface.isResetKeyPressed()) {
             resetGame();
 		}
